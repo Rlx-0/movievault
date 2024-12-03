@@ -11,9 +11,14 @@ import os
 import sys
 from pathlib import Path
 
-project_base_dir = Path(__file__).resolve().parent.parent.parent
+print("Python path:", sys.path)
 
-sys.path.append(str(project_base_dir))
+project_base_dir = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(project_base_dir))
+sys.path.insert(0, str(project_base_dir.parent))
+
+print("Project directory:", project_base_dir)
+print("Updated Python path:", sys.path)
 
 from django.core.wsgi import get_wsgi_application
 
