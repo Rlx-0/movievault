@@ -14,7 +14,6 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         self.stdout.write('Seeding events database...')
 
-        # Get or create admin user
         admin_user, _ = User.objects.get_or_create(
             username='admin',
             defaults={
@@ -24,7 +23,6 @@ class Command(BaseCommand):
             }
         )
 
-        # Create sample users if they don't exist
         users = []
         sample_users = [
             {'username': 'user1', 'email': 'user1@example.com'},
@@ -44,13 +42,11 @@ class Command(BaseCommand):
                 user.save()
             users.append(user)
 
-        # Get some movies for the events
-        movies = list(Movie.objects.all()[:5])  # Get first 5 movies
+        movies = list(Movie.objects.all()[:5])
         if not movies:
             self.stdout.write('No movies found. Please run seed_movies first.')
             return
 
-        # Create sample events
         tz = pytz.UTC
         locations = [
             'Cinema City',
@@ -97,8 +93,7 @@ class Command(BaseCommand):
             if created:
                 self.stdout.write(f'Created event: {event.title}')
                 event.movie_options.set(movie_options)
-                
-                # Create some random votes
+
                 for movie in movie_options:
                     for user in [admin_user] + users:
                         if user.email in event_data['guests'] or user == admin_user:

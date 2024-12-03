@@ -32,9 +32,8 @@ class EventViewSet(viewsets.ModelViewSet):
         """
         event = self.get_object()
         movie_id = request.data.get('movie_id')
-        vote_value = request.data.get('vote')  # True for yes, False for no, None for reset
+        vote_value = request.data.get('vote')
 
-        # Validate user is host or guest
         user_email = request.user.email
         if not (request.user == event.host or user_email in event.guests):
             return Response(
@@ -42,14 +41,12 @@ class EventViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN
             )
 
-        # Validate movie is in event's options
         if not event.movie_options.filter(id=movie_id).exists():
             return Response(
                 {'error': 'Movie is not in event options'}, 
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Create or update vote
         vote, created = MovieVote.objects.update_or_create(
             event=event,
             movie_id=movie_id,
@@ -103,7 +100,6 @@ class EventViewSet(viewsets.ModelViewSet):
                 defaults={'status': 'pending'}
             )
             if created:
-                # Send invitation email
                 send_mail(
                     f'Invitation to {event.title}',
                     f'You have been invited to {event.title}. Please RSVP.',
@@ -144,7 +140,6 @@ class EventViewSet(viewsets.ModelViewSet):
         invitation.status = status
         invitation.save()
 
-        # Update guests list if accepted
         if status == 'accepted' and request.user.email not in event.guests:
             event.guests = event.guests + [request.user.email]
             event.save()
@@ -158,12 +153,10 @@ class EventViewSet(viewsets.ModelViewSet):
         GET /api/events/{event_id}/movie_suggestions/
         """
         event = self.get_object()
-        # Get genres from current movie options
         current_genres = set()
         for movie in event.movie_options.all():
             current_genres.update(movie.genres.all())
 
-        # Find similar movies
         suggested_movies = Movie.objects.filter(
             genres__in=current_genres
         ).exclude(
@@ -180,7 +173,6 @@ class EventViewSet(viewsets.ModelViewSet):
         """
         event = self.get_object()
         
-        # Get voting results
         voting_results = {}
         for movie in event.movie_options.all():
             votes = MovieVote.objects.filter(event=event, movie=movie)
@@ -190,7 +182,6 @@ class EventViewSet(viewsets.ModelViewSet):
                 'pending_votes': votes.filter(vote=None).count()
             }
 
-        # Get attendance info
         invitations = EventInvitation.objects.filter(event=event)
         attendance = {
             'accepted': invitations.filter(status='accepted').count(),
@@ -199,7 +190,6 @@ class EventViewSet(viewsets.ModelViewSet):
             'total_invited': invitations.count()
         }
 
-        # Find winning movie
         winning_movie = max(
             voting_results.items(), 
             key=lambda x: x[1]['yes_votes']
@@ -236,7 +226,6 @@ class EventViewSet(viewsets.ModelViewSet):
         event.selected_movie_id = movie_id
         event.save()
 
-        # Notify all guests
         for email in event.guests:
             send_mail(
                 f'Movie Selected for {event.title}',

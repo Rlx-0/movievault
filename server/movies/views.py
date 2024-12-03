@@ -18,13 +18,12 @@ class MovieViewSet(viewsets.ModelViewSet):
         }
 
     @action(detail=False, methods=['get'])
-    def popular(self, request):
+    def popular(self, requests):
         url = 'https://api.themoviedb.org/3/movie/popular'
         response = requests.get(url, headers=self.get_tmdb_headers())
         
         if response.status_code == 200:
             movies_data = response.json()['results']
-            # Store movies in database
             for movie_data in movies_data:
                 movie, created = Movie.objects.get_or_create(
                     tmdb_id=movie_data['id'],
@@ -37,7 +36,6 @@ class MovieViewSet(viewsets.ModelViewSet):
                     }
                 )
                 if created:
-                    # Add genres
                     for genre_id in movie_data['genre_ids']:
                         genre = Genre.objects.get(id=genre_id)
                         movie.genres.add(genre)

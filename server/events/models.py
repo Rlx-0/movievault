@@ -17,7 +17,7 @@ class Event(models.Model):
     description = models.TextField()
     date = models.DateTimeField()
     location = models.CharField(max_length=200)
-    guests = models.JSONField(default=list)  # Store list of guest emails
+    guests = models.JSONField(default=list)
     movie_options = models.ManyToManyField(Movie, related_name='events')
 
     def __str__(self):
