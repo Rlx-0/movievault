@@ -47,8 +47,10 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
 }
 
-# Application definition
+# Determine if we're running on Render
+IS_RENDER = os.getenv('RENDER', False)
 
+# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -56,12 +58,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'server.users',
-    'server.events',
-    'server.movies',
+    'server.users' if IS_RENDER else 'users',
+    'server.events' if IS_RENDER else 'events',
+    'server.movies' if IS_RENDER else 'movies',
     'rest_framework',
     'corsheaders',
-    'server',
 ]
 
 MIDDLEWARE = [
@@ -93,7 +94,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'server.server.wsgi.application'
+WSGI_APPLICATION = 'server.server.wsgi.application' if IS_RENDER else 'server.wsgi.application'
 
 
 # Database
