@@ -58,9 +58,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'server.users' if IS_RENDER else 'users',
-    'server.events' if IS_RENDER else 'events',
-    'server.movies' if IS_RENDER else 'movies',
+    'users',
+    'events',
+    'movies',
     'rest_framework',
     'corsheaders',
 ]
