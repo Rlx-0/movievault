@@ -94,7 +94,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'server.server.wsgi.application' if IS_RENDER else 'server.wsgi.application'
+WSGI_APPLICATION = 'server.wsgi.application'
 
 
 # Database
