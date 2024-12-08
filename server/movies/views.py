@@ -5,25 +5,34 @@ from .models import Movie, Genre
 from .serializers import MovieSerializer
 import requests
 import os
+from django.conf import settings
 
 class MovieViewSet(viewsets.ModelViewSet):
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
     permission_classes = [permissions.IsAuthenticated]
-
-    def get_tmdb_headers(self):
-        return {
-            'Authorization': f'Bearer {os.getenv("TMDB_API_KEY")}',
-            'Content-Type': 'application/json;charset=utf-8'
-        }
+    
+    def get_tmdb_url(self, endpoint):
+        return f'https://api.themoviedb.org/3/{endpoint}'
+    
+    def get_tmdb_params(self, additional_params=None):
+        params = {'api_key': os.getenv('TMDB_API_KEY')}
+        if additional_params:
+            params.update(additional_params)
+        return params
 
     @action(detail=False, methods=['get'])
-    def popular(self, requests):
-        url = 'https://api.themoviedb.org/3/movie/popular'
-        response = requests.get(url, headers=self.get_tmdb_headers())
-        
-        if response.status_code == 200:
+    def popular(self, request):
+        try:
+            response = requests.get(
+                self.get_tmdb_url('movie/popular'),
+                params=self.get_tmdb_params()
+            )
+            response.raise_for_status()
+            
             movies_data = response.json()['results']
+            stored_movies = []
+            
             for movie_data in movies_data:
                 movie, created = Movie.objects.get_or_create(
                     tmdb_id=movie_data['id'],
@@ -35,13 +44,21 @@ class MovieViewSet(viewsets.ModelViewSet):
                         'vote_average': movie_data['vote_average']
                     }
                 )
-                if created:
+                
+                if created and movie_data.get('genre_ids'):
                     for genre_id in movie_data['genre_ids']:
-                        genre = Genre.objects.get(id=genre_id)
+                        genre, _ = Genre.objects.get_or_create(id=genre_id)
                         movie.genres.add(genre)
+                
+                stored_movies.append(self.serializer_class(movie).data)
             
-            return Response(movies_data)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(stored_movies)
+            
+        except requests.exceptions.RequestException as e:
+            return Response(
+                {'error': f'TMDB API error: {str(e)}'},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
 
     @action(detail=False, methods=['get'])
     def search(self, request):
@@ -52,14 +69,131 @@ class MovieViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        url = f'https://api.themoviedb.org/3/search/movie'
-        params = {'query': query}
-        response = requests.get(
-            url, 
-            headers=self.get_tmdb_headers(), 
-            params=params
-        )
-        
-        if response.status_code == 200:
+        try:
+            response = requests.get(
+                self.get_tmdb_url('search/movie'),
+                params=self.get_tmdb_params({'query': query})
+            )
+            response.raise_for_status()
+            
             return Response(response.json())
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+            
+        except requests.exceptions.RequestException as e:
+            return Response(
+                {'error': f'TMDB API error: {str(e)}'},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
+
+    @action(detail=True, methods=['get'])
+    def details(self, request, pk=None):
+        """Fetch detailed movie information from TMDB"""
+        movie = self.get_object()
+        try:
+            response = requests.get(
+                self.get_tmdb_url(f'movie/{movie.tmdb_id}'),
+                params=self.get_tmdb_params()
+            )
+            response.raise_for_status()
+            
+            # Update local movie with additional details
+            movie_data = response.json()
+            movie.overview = movie_data.get('overview', movie.overview)
+            movie.vote_average = movie_data.get('vote_average', movie.vote_average)
+            movie.save()
+            
+            return Response(movie_data)
+            
+        except requests.exceptions.RequestException as e:
+            return Response(
+                {'error': f'TMDB API error: {str(e)}'},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
+
+    @action(detail=False, methods=['get'])
+    def upcoming(self, request):
+        """Fetch upcoming movies from TMDB"""
+        try:
+            response = requests.get(
+                self.get_tmdb_url('movie/upcoming'),
+                params=self.get_tmdb_params()
+            )
+            response.raise_for_status()
+            
+            movies_data = response.json()['results']
+            stored_movies = []
+            
+            for movie_data in movies_data:
+                movie, created = Movie.objects.get_or_create(
+                    tmdb_id=movie_data['id'],
+                    defaults={
+                        'title': movie_data['title'],
+                        'overview': movie_data['overview'],
+                        'poster_path': movie_data['poster_path'],
+                        'release_date': movie_data.get('release_date'),
+                        'vote_average': movie_data['vote_average']
+                    }
+                )
+                
+                if created and movie_data.get('genre_ids'):
+                    for genre_id in movie_data['genre_ids']:
+                        genre = Genre.objects.filter(id=genre_id).first()
+                        if genre:
+                            movie.genres.add(genre)
+                
+                stored_movies.append(self.serializer_class(movie).data)
+            
+            return Response(stored_movies)
+            
+        except requests.exceptions.RequestException as e:
+            return Response(
+                {'error': f'TMDB API error: {str(e)}'},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
+
+    @action(detail=False, methods=['get'])
+    def discover(self, request):
+        """Get a mix of movies from different categories"""
+        try:
+            # First, get local movies
+            local_movies = Movie.objects.all().order_by('-vote_average')[:20]
+            
+            # If we have fewer than 20 movies locally, fetch from TMDB
+            if local_movies.count() < 20:
+                response = requests.get(
+                    self.get_tmdb_url('movie/discover'),
+                    params=self.get_tmdb_params({
+                        'sort_by': 'popularity.desc',
+                        'page': 1
+                    })
+                )
+                response.raise_for_status()
+                
+                movies_data = response.json()['results']
+                for movie_data in movies_data:
+                    movie, created = Movie.objects.get_or_create(
+                        tmdb_id=movie_data['id'],
+                        defaults={
+                            'title': movie_data['title'],
+                            'overview': movie_data['overview'],
+                            'poster_path': movie_data['poster_path'],
+                            'release_date': movie_data.get('release_date'),
+                            'vote_average': movie_data['vote_average']
+                        }
+                    )
+                    
+                    if created and movie_data.get('genre_ids'):
+                        for genre_id in movie_data['genre_ids']:
+                            genre = Genre.objects.filter(id=genre_id).first()
+                            if genre:
+                                movie.genres.add(genre)
+                
+                    # Refresh local movies query
+                    local_movies = Movie.objects.all().order_by('-vote_average')[:20]
+            
+            return Response(self.serializer_class(local_movies, many=True).data)
+            
+        except requests.exceptions.RequestException as e:
+            return Response(
+                {'error': f'TMDB API error: {str(e)}'},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )

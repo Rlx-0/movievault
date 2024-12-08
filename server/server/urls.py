@@ -33,136 +33,164 @@ Authentication Endpoints:
 POST /api/user/register/
     - Register a new user
     - Public access
-    - Required fields in body:
+    - Required fields:
         - username (string)
         - password (string)
         - email (string)
+    - Returns: User object (id, username, email)
 
 POST /api/token/
-    - Obtain JWT token
+    - Obtain JWT token pair
     - Public access
-    - Required fields in body:
+    - Required fields:
         - username (string)
         - password (string)
-    - Returns: access and refresh tokens
+    - Returns:
+        - access (string): JWT access token
+        - refresh (string): JWT refresh token
 
 POST /api/token/refresh/
     - Refresh JWT token
     - Public access
-    - Required field in body:
-        - refresh (string)
-    - Returns: new access token
+    - Required fields:
+        - refresh (string): Refresh token
+    - Returns:
+        - access (string): New JWT access token
 
 Movie Endpoints:
 --------------
 GET /api/movies/
     - List all movies in database
     - Requires authentication
-    - Returns: List of movies with details
+    - Optional query params:
+        - page (integer)
+        - search (string)
+    - Returns: Paginated list of movies
+
+POST /api/movies/
+    - Add new movie to database
+    - Requires authentication
+    - Required fields:
+        - title (string)
+        - overview (string)
+        - release_date (date)
+    - Returns: Created movie object
 
 GET /api/movies/{id}/
     - Retrieve specific movie details
     - Requires authentication
-    - Returns: Single movie details
+    - Returns: Single movie object with full details
 
 GET /api/movies/popular/
     - Get popular movies from TMDb
     - Requires authentication
-    - Automatically stores movies in database
+    - Optional query params:
+        - page (integer)
     - Returns: List of popular movies
+    - Automatically caches results in database
 
 GET /api/movies/search/
     - Search movies using TMDb
     - Requires authentication
-    - Query parameters:
-        - query (string): Search term
+    - Required query params:
+        - query (string)
     - Returns: Search results from TMDb
+
+GET /api/movies/upcoming/
+    - Get upcoming movies from TMDb
+    - Requires authentication
+    - Returns: List of upcoming movies
+    - Automatically caches results in database
 
 Event Endpoints:
 --------------
 GET /api/events/
-    - List all events where user is host or guest
+    - List all events for authenticated user
     - Requires authentication
-    - Returns: List of user's events
+    - Returns: List of events where user is host or guest
 
 POST /api/events/
     - Create new event
     - Requires authentication
-    - Required fields in body:
+    - Required fields:
         - title (string)
         - description (string)
         - date (datetime)
         - location (string)
         - movie_options (array of movie IDs)
+    - Returns: Created event object
 
 GET /api/events/{id}/
     - Retrieve specific event details
     - Requires authentication
-    - Only accessible to event host or guests
-    - Returns: Single event details
+    - Access: Event host or guests only
+    - Returns: Full event details including guest list and movie options
 
 PUT /api/events/{id}/
-    - Update specific event
+    - Update event details
     - Requires authentication
-    - Only accessible to event host
+    - Access: Event host only
     - Required fields: Same as POST /api/events/
+    - Returns: Updated event object
 
 DELETE /api/events/{id}/
-    - Delete specific event
+    - Delete event
     - Requires authentication
-    - Only accessible to event host
+    - Access: Event host only
+    - Returns: 204 No Content
 
 Event Voting Endpoints:
 --------------------
 POST /api/events/{id}/vote/
     - Submit vote for movie in event
     - Requires authentication
-    - Only accessible to event host and guests
-    - Required fields in body:
+    - Access: Event host or guests only
+    - Required fields:
         - movie_id (integer)
-        - vote (boolean or null): true for yes, false for no, null for reset
+        - vote (boolean or null): true for yes, false for no, null to reset
+    - Returns: Updated vote object
 
 GET /api/events/{id}/vote_results/
     - Get voting results for event
     - Requires authentication
-    - Returns: Voting statistics per movie
+    - Access: Event host or guests only
+    - Returns:
+        - movie_id (integer)
+        - yes_votes (integer)
+        - no_votes (integer)
+        - total_votes (integer)
 
-Event Guest Management:
---------------------
+Guest Management:
+---------------
 POST /api/events/{id}/invite_guests/
     - Invite guests to event
     - Requires authentication
-    - Only accessible to event host
-    - Required fields in body:
+    - Access: Event host only
+    - Required fields:
         - emails (array of strings)
+    - Returns: List of created invitations
 
 POST /api/events/{id}/respond_to_invitation/
     - Respond to event invitation
     - Requires authentication
-    - Required fields in body:
+    - Required fields:
         - status (string): "accepted" or "declined"
+    - Returns: Updated invitation object
 
-Event Movie Management:
---------------------
+Additional Event Features:
+-----------------------
 GET /api/events/{id}/movie_suggestions/
     - Get movie suggestions based on current options
     - Requires authentication
-    - Returns: List of suggested movies
-
-GET /api/events/{id}/event_summary/
-    - Get comprehensive event summary
-    - Requires authentication
-    - Returns:
-        - event details
-        - voting results
-        - attendance information
-        - winning movie
+    - Access: Event host or guests only
+    - Returns: List of suggested movies based on genres
 
 POST /api/events/{id}/finalize_movie/
-    - Finalize movie selection
+    - Finalize movie selection for event
     - Requires authentication
-    - Only accessible to event host
-    - Required fields in body:
+    - Access: Event host only
+    - Required fields:
         - movie_id (integer)
-    - Automatically notifies all guests
+    - Returns: Updated event object
+    - Side effect: Notifies all guests via email
 """
