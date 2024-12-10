@@ -1,11 +1,14 @@
-// import { useState } from "react";
-// import viteLogo from "/vite.svg";
-import "./App.css";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Home } from "./pages/Home/Home";
 
 function App() {
-  // const [count, setCount] = useState(0);
-
-  return <h1>MovieVault</h1>;
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+      </Routes>
+    </Router>
+  );
 }
 
 export default App;
