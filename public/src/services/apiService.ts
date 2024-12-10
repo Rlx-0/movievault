@@ -1,9 +1,9 @@
 import { get, post, put, del } from "./serviceBase";
 import { handleApiError } from "../utils/apiHelpers";
+import { MovieResponse } from "../interface/movie";
 
 const API_BASE_URL = "http://localhost:8000/api";
 
-// Interface definitions
 interface IUser {
   id: number;
   username: string;
@@ -37,7 +37,6 @@ interface IVoteRequest {
   vote: boolean | null;
 }
 
-// Auth Service
 export const authService = {
   register: async (userData: Partial<IUser>) => {
     try {
@@ -76,7 +75,6 @@ export const authService = {
   },
 };
 
-// Movie Service
 export const movieService = {
   getMovies: async (page?: number, search?: string) => {
     try {
@@ -109,11 +107,10 @@ export const movieService = {
     }
   },
 
-  getPopularMovies: async (page?: number) => {
+  getPopularMovies: async () => {
     try {
-      const params = page ? `?page=${page}` : "";
-      const response = await get<IMovie[]>(
-        `${API_BASE_URL}/movies/popular/${params}`
+      const response = await get<MovieResponse>(
+        `${API_BASE_URL}/movies/popular/`
       );
       return response.data;
     } catch (error) {
@@ -123,7 +120,7 @@ export const movieService = {
 
   searchMovies: async (query: string) => {
     try {
-      const response = await get<IMovie[]>(
+      const response = await get<MovieResponse>(
         `${API_BASE_URL}/movies/search/?query=${query}`
       );
       return response.data;
@@ -142,7 +139,6 @@ export const movieService = {
   },
 };
 
-// Event Service
 export const eventService = {
   getEvents: async () => {
     try {

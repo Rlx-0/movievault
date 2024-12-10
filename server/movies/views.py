@@ -5,7 +5,6 @@ from .models import Movie, Genre
 from .serializers import MovieSerializer
 import requests
 import os
-from django.conf import settings
 
 class MovieViewSet(viewsets.ModelViewSet):
     queryset = Movie.objects.all()
@@ -29,30 +28,13 @@ class MovieViewSet(viewsets.ModelViewSet):
                 params=self.get_tmdb_params()
             )
             response.raise_for_status()
-            
-            movies_data = response.json()['results']
-            stored_movies = []
-            
-            for movie_data in movies_data:
-                movie, created = Movie.objects.get_or_create(
-                    tmdb_id=movie_data['id'],
-                    defaults={
-                        'title': movie_data['title'],
-                        'overview': movie_data['overview'],
-                        'poster_path': movie_data['poster_path'],
-                        'release_date': movie_data.get('release_date'),
-                        'vote_average': movie_data['vote_average']
-                    }
-                )
-                
-                if created and movie_data.get('genre_ids'):
-                    for genre_id in movie_data['genre_ids']:
-                        genre, _ = Genre.objects.get_or_create(id=genre_id)
-                        movie.genres.add(genre)
-                
-                stored_movies.append(self.serializer_class(movie).data)
-            
-            return Response(stored_movies)
+
+            return Response({
+                'page': 1,
+                'results': response.json()['results'],
+                'total_pages': 1,
+                'total_results': len(response.json()['results'])
+            })
             
         except requests.exceptions.RequestException as e:
             return Response(
@@ -94,8 +76,7 @@ class MovieViewSet(viewsets.ModelViewSet):
                 params=self.get_tmdb_params()
             )
             response.raise_for_status()
-            
-            # Update local movie with additional details
+
             movie_data = response.json()
             movie.overview = movie_data.get('overview', movie.overview)
             movie.vote_average = movie_data.get('vote_average', movie.vote_average)
@@ -156,7 +137,7 @@ class MovieViewSet(viewsets.ModelViewSet):
         try:
             # First, get local movies
             local_movies = Movie.objects.all().order_by('-vote_average')[:20]
-            
+
             # If we have fewer than 20 movies locally, fetch from TMDB
             if local_movies.count() < 20:
                 response = requests.get(
