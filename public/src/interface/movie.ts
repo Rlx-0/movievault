@@ -6,6 +6,7 @@ export interface Movie {
   release_date?: string;
   genres?: string[];
   vote_average?: number;
+  runtime?: number;
   adult: boolean;
   backdrop_path: string | null;
   genre_ids: number[];

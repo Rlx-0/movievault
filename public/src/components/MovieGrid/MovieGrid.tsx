@@ -1,4 +1,6 @@
 import { Movie } from "../../interface/movie";
+import { Link } from "react-router-dom";
+import { genreMap } from "../../config/movieFilters";
 
 interface MovieGridProps {
   movies: Movie[];
@@ -6,22 +8,34 @@ interface MovieGridProps {
 
 export const MovieGrid = ({ movies }: MovieGridProps) => {
   const getImageUrl = (path: string | null) => {
-    if (!path) return "https://via.placeholder.com/500x750?text=No+Image"; // Placeholder image TODO: Change this to a default image
+    if (!path) return "https://via.placeholder.com/500x750?text=No+Image";
     return `https://image.tmdb.org/t/p/w500${path}`;
   };
 
+  const getGenres = (genreIds: number[]) => {
+    return genreIds
+      .map((id) => genreMap.get(id))
+      .filter(Boolean)
+      .slice(0, 2)
+      .join(", ");
+  };
+
   return (
-    <div className="grid grid-cols-5 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
       {movies.map((movie) => (
-        <div
+        <Link
+          to={`/movie/${movie.id}`}
           key={movie.id}
           className="bg-darkGray rounded-lg overflow-hidden hover:scale-105 transition-transform"
         >
-          <img
-            src={getImageUrl(movie.poster_path)}
-            alt={movie.title}
-            className="w-full h-64 object-cover"
-          />
+          <div className="aspect-[2/3] relative">
+            <img
+              src={getImageUrl(movie.poster_path)}
+              alt={movie.title}
+              className="w-full h-full object-cover"
+              loading="lazy"
+            />
+          </div>
           <div className="p-4">
             <h3
               className="text-white font-bold mb-2 truncate"
@@ -29,20 +43,26 @@ export const MovieGrid = ({ movies }: MovieGridProps) => {
             >
               {movie.title}
             </h3>
-            <div className="flex justify-between items-center">
-              <p className="text-lightGray text-sm">
+            <div
+              className="text-lightGray text-sm mb-2 truncate"
+              title={getGenres(movie.genre_ids)}
+            >
+              {getGenres(movie.genre_ids)}
+            </div>
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-lightGray">
                 {movie.release_date
                   ? new Date(movie.release_date).getFullYear()
                   : "N/A"}
-              </p>
-              <span className="text-yellow-400">
+              </span>
+              <span className="text-amber-500 font-medium">
                 {movie.vote_average
                   ? `★ ${movie.vote_average.toFixed(1)}`
                   : "Not rated"}
               </span>
             </div>
           </div>
-        </div>
+        </Link>
       ))}
     </div>
   );
