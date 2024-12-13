@@ -7,7 +7,6 @@ from users.views import CreateUserView
 from movies.views import MovieViewSet
 from events.views import EventViewSet
 
-# Create a router and register our viewsets
 router = DefaultRouter()
 router.register(r'events', EventViewSet, basename='event')
 router.register(r'movies', MovieViewSet, basename='movie')
@@ -23,6 +22,8 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='refresh_token'),
     path('api-auth/', include('rest_framework.urls')),
     path('api/', include(router.urls)),
+    path('api/', include('movies.urls')),
+    path('api/', include('events.urls')),
 ]
 
 """

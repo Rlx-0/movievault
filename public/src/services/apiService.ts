@@ -1,6 +1,7 @@
+// TODO Eventually clean up this file
 import { get, post, put, del } from "./serviceBase";
 import { handleApiError } from "../utils/apiHelpers";
-import { MovieResponse } from "../interface/movie";
+import { Movie, MovieResponse } from "../interface/movie";
 
 const API_BASE_URL = "http://localhost:8000/api";
 
@@ -11,13 +12,6 @@ interface IUser {
   password?: string;
 }
 
-interface IMovie {
-  id: number;
-  title: string;
-  overview: string;
-  release_date: string;
-}
-
 interface IEvent {
   id: number;
   title: string;
@@ -25,6 +19,8 @@ interface IEvent {
   date: string;
   location: string;
   movie_options: number[];
+  guests: string[];
+  host?: number | null;
 }
 
 interface ITokenResponse {
@@ -37,70 +33,25 @@ interface IVoteRequest {
   vote: boolean | null;
 }
 
-export const authService = {
-  register: async (userData: Partial<IUser>) => {
-    try {
-      const response = await post<IUser>(
-        `${API_BASE_URL}/user/register/`,
-        userData
-      );
-      return response.data;
-    } catch (error) {
-      throw new Error(handleApiError(error));
-    }
-  },
-
-  login: async (username: string, password: string) => {
-    try {
-      const response = await post<ITokenResponse>(`${API_BASE_URL}/token/`, {
-        username,
-        password,
-      });
-      return response.data;
-    } catch (error) {
-      throw new Error(handleApiError(error));
-    }
-  },
-
-  refreshToken: async (refresh: string) => {
-    try {
-      const response = await post<{ access: string }>(
-        `${API_BASE_URL}/token/refresh/`,
-        { refresh }
-      );
-      return response.data;
-    } catch (error) {
-      throw new Error(handleApiError(error));
-    }
-  },
-};
-
 export const movieService = {
-  getMovies: async (page?: number, search?: string) => {
+  searchMovies: async (query: string, signal?: AbortSignal) => {
     try {
-      const params = new URLSearchParams();
-      if (page) params.append("page", page.toString());
-      if (search) params.append("search", search);
-
-      const response = await get<IMovie[]>(`${API_BASE_URL}/movies/?${params}`);
+      const response = await get<MovieResponse>(
+        `${API_BASE_URL}/movies/search/?query=${encodeURIComponent(query)}`,
+        { signal }
+      );
       return response.data;
     } catch (error) {
+      if (error.name === "AbortError") {
+        throw error;
+      }
       throw new Error(handleApiError(error));
     }
   },
 
-  getMovieById: async (id: number) => {
+  getMovieDetails: async (id: number) => {
     try {
-      const response = await get<IMovie>(`${API_BASE_URL}/movies/${id}/`);
-      return response.data;
-    } catch (error) {
-      throw new Error(handleApiError(error));
-    }
-  },
-
-  createMovie: async (movieData: Omit<IMovie, "id">) => {
-    try {
-      const response = await post<IMovie>(`${API_BASE_URL}/movies/`, movieData);
+      const response = await get<Movie>(`${API_BASE_URL}/movies/tmdb/${id}/`);
       return response.data;
     } catch (error) {
       throw new Error(handleApiError(error));
@@ -112,26 +63,6 @@ export const movieService = {
       const response = await get<MovieResponse>(
         `${API_BASE_URL}/movies/popular/`
       );
-      return response.data;
-    } catch (error) {
-      throw new Error(handleApiError(error));
-    }
-  },
-
-  searchMovies: async (query: string) => {
-    try {
-      const response = await get<MovieResponse>(
-        `${API_BASE_URL}/movies/search/?query=${query}`
-      );
-      return response.data;
-    } catch (error) {
-      throw new Error(handleApiError(error));
-    }
-  },
-
-  getUpcomingMovies: async () => {
-    try {
-      const response = await get<IMovie[]>(`${API_BASE_URL}/movies/upcoming/`);
       return response.data;
     } catch (error) {
       throw new Error(handleApiError(error));
@@ -158,11 +89,12 @@ export const eventService = {
     }
   },
 
-  createEvent: async (eventData: Omit<IEvent, "id">) => {
+  createEvent: async (eventData: Partial<IEvent>) => {
     try {
       const response = await post<IEvent>(`${API_BASE_URL}/events/`, eventData);
       return response.data;
     } catch (error) {
+      console.error("Event creation error:", error.response?.data);
       throw new Error(handleApiError(error));
     }
   },
@@ -253,6 +185,44 @@ export const eventService = {
       const response = await post(
         `${API_BASE_URL}/events/${eventId}/finalize_movie/`,
         { movie_id: movieId }
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
+  },
+};
+
+export const authService = {
+  register: async (userData: Partial<IUser>) => {
+    try {
+      const response = await post<IUser>(
+        `${API_BASE_URL}/user/register/`,
+        userData
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
+  },
+
+  login: async (username: string, password: string) => {
+    try {
+      const response = await post<ITokenResponse>(`${API_BASE_URL}/token/`, {
+        username,
+        password,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
+  },
+
+  refreshToken: async (refresh: string) => {
+    try {
+      const response = await post<{ access: string }>(
+        `${API_BASE_URL}/token/refresh/`,
+        { refresh }
       );
       return response.data;
     } catch (error) {
