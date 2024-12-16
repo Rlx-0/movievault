@@ -1,21 +1,20 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { authService } from "../../services/apiService";
+import { useAuth } from "../../context/AuthContext";
 
 export const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
     try {
-      const response = await authService.login(username, password);
-      localStorage.setItem("accessToken", response.access);
-      localStorage.setItem("refreshToken", response.refresh);
+      await login(username, password);
       navigate("/");
     } catch (err) {
       setError("Invalid username or password");

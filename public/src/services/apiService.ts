@@ -26,6 +26,7 @@ interface IEvent {
 interface ITokenResponse {
   access: string;
   refresh: string;
+  userId: number;
 }
 
 interface IVoteRequest {

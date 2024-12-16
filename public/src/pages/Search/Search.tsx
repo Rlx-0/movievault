@@ -58,13 +58,16 @@ export const Search = () => {
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const queryParam = searchParams.get("q");
+    const stateQuery = location.state?.searchQuery;
 
-    if (queryParam) {
+    if (stateQuery) {
+      handleSearch(stateQuery);
+    } else if (queryParam) {
       handleSearch(queryParam);
     } else {
       fetchPopularMovies();
     }
-  }, [location.search]);
+  }, [location]);
 
   return (
     <div className="min-h-screen flex flex-col bg-black">

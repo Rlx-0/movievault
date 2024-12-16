@@ -39,7 +39,6 @@ class EventSerializer(serializers.ModelSerializer):
         read_only_fields = ['host']
 
     def validate(self, data):
-        # Handle separate date and time fields from frontend
         request = self.context.get('request')
         if request and request.data:
             date = request.data.get('date')
@@ -49,12 +48,10 @@ class EventSerializer(serializers.ModelSerializer):
                     data['date'] = datetime.strptime(f"{date}T{time}", "%Y-%m-%dT%H:%M")
                 except ValueError:
                     raise serializers.ValidationError({"date": "Invalid date/time format"})
-        
-        # Validate date is in future
+
         if data.get('date') and data['date'] < timezone.now():
             raise serializers.ValidationError({"date": "Event date must be in the future"})
 
-        # Additional cross-field validation
         if data.get('host') and data.get('guests'):
             if data['host'].email in data['guests']:
                 raise serializers.ValidationError(
@@ -72,7 +69,6 @@ class EventSerializer(serializers.ModelSerializer):
         if len(value) > 5:
             raise serializers.ValidationError("Cannot select more than 5 movies")
 
-        # Ensure all values are integers
         try:
             return [int(movie_id) for movie_id in value]
         except (ValueError, TypeError):
@@ -81,8 +77,7 @@ class EventSerializer(serializers.ModelSerializer):
     def validate_guests(self, value):
         if len(value) < 1:
             raise serializers.ValidationError("Must invite at least one guest")
-        
-        # Remove duplicates while preserving order
+
         seen = set()
         unique_guests = []
         for email in value:
@@ -93,19 +88,16 @@ class EventSerializer(serializers.ModelSerializer):
         return unique_guests
 
     def create(self, validated_data):
-        # Get the host from the context
+        guests = validated_data.pop('guests', [])
+        
         request = self.context.get('request')
         if not request or not request.user:
             raise serializers.ValidationError("Authentication required")
         
-        # Add host to validated data
         validated_data['host'] = request.user
         
-        # Create the event
         event = Event.objects.create(**validated_data)
         
-        # Create invitations
-        guests = validated_data.pop('guests', [])
         for email in guests:
             EventInvitation.objects.create(
                 event=event,

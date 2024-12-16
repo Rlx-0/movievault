@@ -22,20 +22,20 @@ export const Header = ({ onSearch }: HeaderProps) => {
     if (onSearch) {
       onSearch(query);
     } else {
-      navigate(`/search?q=${encodeURIComponent(query)}`);
+      navigate("/search", { state: { searchQuery: query } });
     }
   };
 
   return (
     <header className="flex justify-between items-center px-12 py-5 bg-black">
-      <Link to="/" className="text-2xl text-white font-bold">
+      <Link to="/" className="text-2xl text-white font-bold flex-1">
         MovieVault
       </Link>
 
-      <nav className="flex gap-10">
+      <nav className="flex gap-10 flex-1 justify-center">
         <Link
           to="/events"
-          className="text-red hover:text-white transition-colors"
+          className="text-lightGray hover:text-white transition-colors"
         >
           Events
         </Link>
@@ -53,7 +53,7 @@ export const Header = ({ onSearch }: HeaderProps) => {
         </Link>
       </nav>
 
-      <div className="flex items-center gap-8">
+      <div className="flex items-center gap-8 flex-1 justify-end">
         <form onSubmit={handleSubmit} className="flex items-center gap-8">
           <input
             type="search"

@@ -6,6 +6,7 @@ from rest_framework.routers import DefaultRouter
 from users.views import CreateUserView
 from movies.views import MovieViewSet
 from events.views import EventViewSet
+from users.custom_auth import CustomTokenObtainPairView
 
 router = DefaultRouter()
 router.register(r'events', EventViewSet, basename='event')
@@ -18,8 +19,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', health_check),
     path('api/user/register/', CreateUserView.as_view(), name='register'),
-    path('api/token/', TokenObtainPairView.as_view(), name='get_token'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='refresh_token'),
+    path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api-auth/', include('rest_framework.urls')),
     path('api/', include(router.urls)),
     path('api/', include('movies.urls')),

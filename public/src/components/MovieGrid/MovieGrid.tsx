@@ -1,6 +1,7 @@
 import { Movie } from "../../interface/movie";
 import { Link } from "react-router-dom";
 import { genreMap } from "../../config/movieFilters";
+import placeholderImage from "../../img/Placeholder.png";
 
 interface MovieGridProps {
   movies: Movie[];
@@ -8,11 +9,12 @@ interface MovieGridProps {
 
 export const MovieGrid = ({ movies }: MovieGridProps) => {
   const getImageUrl = (path: string | null) => {
-    if (!path) return "https://via.placeholder.com/500x750?text=No+Image";
+    if (!path) return placeholderImage;
     return `https://image.tmdb.org/t/p/w500${path}`;
   };
 
-  const getGenres = (genreIds: number[]) => {
+  const getGenres = (genreIds: number[] | undefined) => {
+    if (!genreIds) return "";
     return genreIds
       .map((id) => genreMap.get(id))
       .filter(Boolean)
@@ -34,6 +36,9 @@ export const MovieGrid = ({ movies }: MovieGridProps) => {
               alt={movie.title}
               className="w-full h-full object-cover"
               loading="lazy"
+              onError={(e) => {
+                e.currentTarget.src = placeholderImage;
+              }}
             />
           </div>
           <div className="p-4">
