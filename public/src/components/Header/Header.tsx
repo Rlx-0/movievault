@@ -82,7 +82,7 @@ export const Header = ({ onSearch }: HeaderProps) => {
     <header className="bg-black bg-opacity-90 px-8 py-6">
       <div className="flex justify-between items-center gap-4">
         <Link to="/" className="text-2xl text-white font-bold">
-          MovieNight
+          MovieVault
         </Link>
 
         {/* Desktop Search Bar */}
