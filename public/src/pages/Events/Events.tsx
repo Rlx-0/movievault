@@ -25,9 +25,9 @@ export const Events = () => {
       try {
         setLoading(true);
         const data = await eventService.getEvents();
-        setEvents(data);
-      } catch (err) {
-        setError("Failed to load events");
+        setEvents(data as IEvent[]);
+      } catch (error) {
+        setError("Failed to fetch events");
       } finally {
         setLoading(false);
       }
@@ -178,7 +178,7 @@ export const Events = () => {
                 events={displayEvents}
                 onEventClick={handleEventClick}
                 onDeleteEvent={handleDeleteEvent}
-                currentUserId={userId}
+                currentUserId={userId || undefined}
               />
             ) : (
               <div className="text-lightGray text-center py-8">

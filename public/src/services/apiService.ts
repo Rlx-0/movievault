@@ -2,6 +2,7 @@
 import { get, post, put, del } from "./serviceBase";
 import { handleApiError } from "../utils/apiHelpers";
 import { Movie, MovieResponse } from "../interface/movie";
+import { ApiError } from "../interface/api";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -43,10 +44,11 @@ export const movieService = {
       );
       return response.data;
     } catch (error) {
-      if (error.name === "AbortError") {
-        throw error;
+      const apiError = error as ApiError;
+      if (apiError.name === "AbortError") {
+        throw apiError;
       }
-      throw new Error(handleApiError(error));
+      throw new Error(handleApiError(apiError));
     }
   },
 
@@ -95,8 +97,9 @@ export const eventService = {
       const response = await post<IEvent>(`${API_BASE_URL}/events/`, eventData);
       return response.data;
     } catch (error) {
-      console.error("Event creation error:", error.response?.data);
-      throw new Error(handleApiError(error));
+      const apiError = error as ApiError;
+      console.error("Event creation error:", apiError.response?.data);
+      throw new Error(handleApiError(apiError));
     }
   },
 

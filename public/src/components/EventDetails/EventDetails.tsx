@@ -3,16 +3,18 @@ import { Movie } from "../../interface/movie";
 import { MovieSearch } from "../MovieSearch/MovieSearch";
 import { movieService } from "../../services/apiService";
 
+interface EventFormData {
+  title: string;
+  description: string;
+  date: string;
+  time: string;
+  location: string;
+  movie_options: number[];
+}
+
 interface EventDetailsProps {
-  formData: {
-    title: string;
-    description: string;
-    date: string;
-    time: string;
-    location: string;
-    movie_options: number[];
-  };
-  onFormChange: (updates: Partial<typeof formData>) => void;
+  formData: EventFormData;
+  onFormChange: (updates: Partial<EventFormData>) => void;
 }
 
 export const EventDetails = ({ formData, onFormChange }: EventDetailsProps) => {
@@ -43,30 +45,20 @@ export const EventDetails = ({ formData, onFormChange }: EventDetailsProps) => {
     fetchSelectedMovies();
   }, []);
 
-  const handleMovieSelect = async (movie: Movie) => {
-    if (selectedMovies.length >= 5) {
-      setError("Maximum of 5 movies can be selected");
-      return;
+  const handleMovieSelect = (movie: Movie) => {
+    if (!formData.movie_options.includes(movie.id)) {
+      onFormChange({
+        movie_options: [...formData.movie_options, movie.id],
+      });
     }
-
-    if (selectedMovies.find((m) => m.id === movie.id)) {
-      setError("This movie is already selected");
-      return;
-    }
-
-    setSelectedMovies([...selectedMovies, movie]);
-    onFormChange({
-      movie_options: [...formData.movie_options, movie.id],
-    });
-    setError(null);
   };
 
   const handleRemoveMovie = (movieId: number) => {
-    setSelectedMovies(selectedMovies.filter((m) => m.id !== movieId));
     onFormChange({
-      movie_options: formData.movie_options.filter((id) => id !== movieId),
+      movie_options: formData.movie_options.filter(
+        (id: number) => id !== movieId
+      ),
     });
-    setError(null);
   };
 
   return (

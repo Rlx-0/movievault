@@ -43,8 +43,16 @@ axiosInstance.interceptors.response.use(
   }
 );
 
-export const get = <T>(url: string) => {
-  return axiosInstance.get<T>(url);
+export const get = async <T>(
+  url: string,
+  options?: RequestInit
+): Promise<{ data: T }> => {
+  const response = await fetch(url, {
+    method: "GET",
+    headers: getHeaders(),
+    ...options,
+  });
+  return handleResponse<T>(response);
 };
 
 export const post = <T>(url: string, data?: any) => {
@@ -57,4 +65,23 @@ export const put = <T>(url: string, data: any) => {
 
 export const del = <T>(url: string) => {
   return axiosInstance.delete<T>(url);
+};
+
+const getHeaders = () => {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  const token = localStorage.getItem("accessToken");
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+  return headers;
+};
+
+const handleResponse = async <T>(response: Response): Promise<{ data: T }> => {
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  const data = await response.json();
+  return { data };
 };

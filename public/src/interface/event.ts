@@ -9,9 +9,9 @@ export interface IEvent {
   movie_options: number[];
   guests: string[];
   host: number | null;
-  created_at: string;
-  updated_at: string;
-  invitations: {
+  created_at?: string;
+  updated_at?: string;
+  invitations?: {
     email: string;
     status: "pending" | "accepted" | "declined";
     created_at: string;

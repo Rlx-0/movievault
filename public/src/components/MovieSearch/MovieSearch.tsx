@@ -2,6 +2,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import { Movie } from "../../interface/movie";
 import { movieService } from "../../services/apiService";
 import debounce from "lodash/debounce";
+import { ApiError } from "../../interface/api";
 
 interface MovieSearchProps {
   onMovieSelect: (movie: Movie) => void;
@@ -48,11 +49,11 @@ export const MovieSearch = ({
         );
 
         setSearchResults(filteredResults || []);
-      } catch (error) {
-        // Don't set error if request was aborted
+      } catch (err) {
+        const error = err as ApiError;
         if (error.name !== "AbortError") {
           setSearchError("Failed to search movies");
-          console.error("Error searching movies:", error);
+          console.error("Movie search error:", error);
         }
       } finally {
         setLoading(false);

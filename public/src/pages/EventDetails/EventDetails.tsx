@@ -18,7 +18,10 @@ export const EventDetails = () => {
       try {
         setLoading(true);
         const data = await eventService.getEventById(Number(id));
-        setEvent(data);
+        setEvent({
+          ...data,
+          host: data.host ?? null,
+        });
       } catch (err) {
         setError("Failed to load event details");
       } finally {

@@ -2,15 +2,14 @@ import { useState } from "react";
 import { IEvent } from "../../interface/event";
 import { eventService } from "../../services/apiService";
 import { formatDate } from "../../utils/dateFormatter";
+import { VoteResults } from "../../interface/api";
 
 interface EventCardProps {
   event: IEvent;
 }
 
 export const EventCard = ({ event }: EventCardProps) => {
-  const [votes, setVotes] = useState<
-    Record<number, { upvotes: number; downvotes: number }>
-  >({});
+  const [votes, setVotes] = useState<VoteResults>({});
   const [loading, setLoading] = useState(false);
 
   const handleVote = async (movieId: number, vote: boolean) => {
@@ -18,7 +17,7 @@ export const EventCard = ({ event }: EventCardProps) => {
       setLoading(true);
       await eventService.submitVote(event.id, { movie_id: movieId, vote });
       const results = await eventService.getVoteResults(event.id);
-      setVotes(results);
+      setVotes(results as VoteResults);
     } catch (error) {
       console.error("Failed to submit vote:", error);
     } finally {

@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { IEvent } from "../../interface/event";
 import { eventService, movieService } from "../../services/apiService";
-import { formatDate } from "../../utils/dateFormatter";
 import { Movie } from "../../interface/movie";
 import placeholderImage from "../../img/Placeholder.png";
 
@@ -81,7 +80,7 @@ export const NextEvent = () => {
           );
 
         if (futureEvents.length > 0) {
-          setNextEvent(futureEvents[0]);
+          setNextEvent(futureEvents[0] as IEvent);
 
           // Fetch movie details if there are movie options
           if (futureEvents[0].movie_options.length > 0) {

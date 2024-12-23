@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { movieService, eventService } from "../../services/apiService";
 import { Movie } from "../../interface/movie";
+import { VoteResults } from "../../interface/api";
 
 interface MovieVotingProps {
   eventId: number;
@@ -9,9 +10,7 @@ interface MovieVotingProps {
 
 export const MovieVoting = ({ eventId, movieOptions }: MovieVotingProps) => {
   const [movies, setMovies] = useState<Movie[]>([]);
-  const [votes, setVotes] = useState<
-    Record<number, { upvotes: number; downvotes: number }>
-  >({});
+  const [votes, setVotes] = useState<VoteResults>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -26,7 +25,7 @@ export const MovieVoting = ({ eventId, movieOptions }: MovieVotingProps) => {
         setMovies(moviesData);
 
         const votesData = await eventService.getVoteResults(eventId);
-        setVotes(votesData);
+        setVotes(votesData as VoteResults);
       } catch (err) {
         setError("Failed to load movies and votes");
       } finally {
@@ -41,10 +40,15 @@ export const MovieVoting = ({ eventId, movieOptions }: MovieVotingProps) => {
     try {
       await eventService.submitVote(eventId, { movie_id: movieId, vote });
       const updatedVotes = await eventService.getVoteResults(eventId);
-      setVotes(updatedVotes);
+      setVotes(updatedVotes as VoteResults);
     } catch (err) {
       setError("Failed to submit vote");
     }
+  };
+
+  const getYear = (date?: string) => {
+    if (!date) return "N/A";
+    return new Date(date).getFullYear();
   };
 
   if (loading) return <div className="text-white">Loading movies...</div>;
@@ -64,7 +68,7 @@ export const MovieVoting = ({ eventId, movieOptions }: MovieVotingProps) => {
             <div className="flex-1">
               <h3 className="text-white font-bold">{movie.title}</h3>
               <p className="text-lightGray text-sm">
-                {new Date(movie.release_date).getFullYear()}
+                {getYear(movie.release_date)}
               </p>
               <div className="flex gap-4 mt-4">
                 <button
