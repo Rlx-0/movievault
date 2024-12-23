@@ -112,9 +112,9 @@ export const eventService = {
     }
   },
 
-  deleteEvent: async (id: number) => {
+  deleteEvent: async (eventId: number) => {
     try {
-      await del(`${API_BASE_URL}/events/${id}/`);
+      await del(`${API_BASE_URL}/events/${eventId}/`);
     } catch (error) {
       throw new Error(handleApiError(error));
     }

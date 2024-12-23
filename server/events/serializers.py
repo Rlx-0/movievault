@@ -3,6 +3,13 @@ from .models import Event, MovieVote, EventInvitation
 from django.utils import timezone
 from datetime import datetime
 from django.core.validators import EmailValidator
+from django.core.mail import send_mail
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.urls import reverse
+from django.template.loader import render_to_string
+from django.core.mail import EmailMultiAlternatives
+from django.core.signing import Signer
 
 class MovieVoteSerializer(serializers.ModelSerializer):
     class Meta:
@@ -99,10 +106,55 @@ class EventSerializer(serializers.ModelSerializer):
         event = Event.objects.create(**validated_data)
         
         for email in guests:
-            EventInvitation.objects.create(
+            invitation = EventInvitation.objects.create(
                 event=event,
                 email=email.lower(),
                 status='pending'
             )
+            
+            # Create signed token for RSVP
+            signer = Signer()
+            token = signer.sign(f"{event.id}:{email.lower()}")
+            
+            # Prepare context for email template
+            context = {
+                'event': {
+                    'title': event.title,
+                    'date': event.date.strftime('%B %d, %Y at %I:%M %p'),
+                    'location': event.location,
+                    'description': event.description,
+                },
+                'recipient_name': email.split('@')[0],
+                'host_name': request.user.username,
+                'rsvp_yes_url': request.build_absolute_uri(
+                    reverse('event-respond-to-invitation', kwargs={'pk': event.id}) + f'?token={token}&status=yes'
+                ),
+                'rsvp_no_url': request.build_absolute_uri(
+                    reverse('event-respond-to-invitation', kwargs={'pk': event.id}) + f'?token={token}&status=no'
+                ),
+                'site_name': 'Movie Night',
+                'contact_email': settings.DEFAULT_FROM_EMAIL,
+            }
+            
+            # Render email template
+            html_message = render_to_string('emails/event_invitation.html', context)
+            plain_message = f"""
+            You've been invited to {event.title} by {request.user.username}
+            Date: {event.date}
+            Location: {event.location}
+            
+            Please visit {context['rsvp_yes_url']} to accept
+            or {context['rsvp_no_url']} to decline.
+            """
+            
+            email_message = EmailMultiAlternatives(
+                subject=f'Invitation to {event.title}',
+                body=plain_message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                to=[email],
+            )
+            email_message.attach_alternative(html_message, "text/html")
+            email_message.mixed_subtype = 'related'
+            email_message.send(fail_silently=False)
         
         return event

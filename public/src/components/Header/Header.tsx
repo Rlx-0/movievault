@@ -1,76 +1,137 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
-interface HeaderProps {
-  onSearch?: (query: string) => void;
-}
-
-export const Header = ({ onSearch }: HeaderProps) => {
+export const Header = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const { isAuthenticated, logout } = useAuth();
+  const location = useLocation();
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const query = new FormData(form).get("search") as string;
-
-    if (!query.trim()) {
-      navigate("/search");
-      return;
-    }
-
-    if (onSearch) {
-      onSearch(query);
-    } else {
-      navigate("/search", { state: { searchQuery: query } });
-    }
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+    if (isSearchOpen) setIsSearchOpen(false);
   };
 
-  return (
-    <header className="flex justify-between items-center px-12 py-5 bg-black">
-      <Link to="/" className="text-2xl text-white font-bold flex-1">
-        MovieVault
+  const toggleSearch = () => {
+    setIsSearchOpen(!isSearchOpen);
+    if (isMenuOpen) setIsMenuOpen(false);
+  };
+
+  const handleLogout = () => {
+    logout();
+    setIsMenuOpen(false);
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    } else {
+      navigate("/search");
+    }
+    setSearchQuery("");
+    setIsSearchOpen(false);
+    setIsMenuOpen(false);
+  };
+
+  const NavLinks = () => (
+    <>
+      <Link
+        to="/"
+        className={`text-lg ${
+          location.pathname === "/"
+            ? "text-white"
+            : "text-lightGray hover:text-white"
+        }`}
+      >
+        Home
       </Link>
+      <Link
+        to="/events"
+        className={`text-lg ${
+          location.pathname === "/events"
+            ? "text-white"
+            : "text-lightGray hover:text-white"
+        }`}
+      >
+        Events
+      </Link>
+      {isAuthenticated ? (
+        <button
+          onClick={handleLogout}
+          className="text-lg text-lightGray hover:text-white"
+        >
+          Logout
+        </button>
+      ) : (
+        <Link to="/login" className="text-lg text-lightGray hover:text-white">
+          Login
+        </Link>
+      )}
+    </>
+  );
 
-      <nav className="flex gap-10 flex-1 justify-center">
-        <Link
-          to="/events"
-          className="text-lightGray hover:text-white transition-colors"
-        >
-          Events
+  return (
+    <header className="bg-black bg-opacity-90 px-8 py-6">
+      <div className="flex justify-between items-center gap-4">
+        <Link to="/" className="text-2xl text-white font-bold">
+          MovieNight
         </Link>
-        <Link
-          to="/saved"
-          className="text-lightGray hover:text-white transition-colors"
-        >
-          Saved
-        </Link>
-        <Link
-          to="/settings"
-          className="text-lightGray hover:text-white transition-colors"
-        >
-          Settings
-        </Link>
-      </nav>
 
-      <div className="flex items-center gap-8 flex-1 justify-end">
-        <form onSubmit={handleSubmit} className="flex items-center gap-8">
-          <input
-            type="search"
-            name="search"
-            placeholder="Search movies..."
-            className="bg-darkGray text-white px-4 py-2 rounded-full w-64"
-          />
+        {/* Desktop Search Bar */}
+        <form
+          onSubmit={handleSearch}
+          className="hidden md:block flex-1 max-w-md mx-8"
+        >
+          <div className="relative">
+            <input
+              type="search"
+              placeholder="Search movies..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full px-4 py-2 bg-darkGray text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red"
+            />
+            <button
+              type="submit"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2"
+            >
+              <svg
+                className="w-5 h-5 text-lightGray hover:text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </button>
+          </div>
+        </form>
+
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex space-x-8">
+          <NavLinks />
+        </nav>
+
+        {/* Mobile Search and Menu */}
+        <div className="flex items-center gap-4 md:hidden">
           <button
-            type="submit"
-            className="text-lightGray hover:text-white transition-colors"
+            onClick={toggleSearch}
+            className="text-white focus:outline-none"
+            aria-label="Search"
           >
             <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
+              className="w-6 h-6"
               fill="none"
-              viewBox="0 0 24 24"
               stroke="currentColor"
+              viewBox="0 0 24 24"
             >
               <path
                 strokeLinecap="round"
@@ -80,23 +141,81 @@ export const Header = ({ onSearch }: HeaderProps) => {
               />
             </svg>
           </button>
-        </form>
-        {isAuthenticated ? (
+
           <button
-            onClick={logout}
-            className="bg-red hover:bg-red-light text-white px-8 py-2 rounded-full transition-colors"
+            onClick={toggleMenu}
+            className="text-white focus:outline-none"
+            aria-label="Toggle menu"
           >
-            Logout
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              {isMenuOpen ? (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              ) : (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              )}
+            </svg>
           </button>
-        ) : (
-          <Link
-            to="/login"
-            className="bg-red hover:bg-red-light text-white px-8 py-2 rounded-full transition-colors"
-          >
-            Login
-          </Link>
-        )}
+        </div>
       </div>
+
+      {/* Mobile Search Bar - Expandable */}
+      {isSearchOpen && (
+        <form
+          onSubmit={handleSearch}
+          className="md:hidden mt-4 animate-slideDown"
+        >
+          <div className="relative">
+            <input
+              type="search"
+              placeholder="Search movies..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full px-4 py-2 bg-darkGray text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red"
+              autoFocus
+            />
+            <button
+              type="submit"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2"
+            >
+              <svg
+                className="w-5 h-5 text-lightGray hover:text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </button>
+          </div>
+        </form>
+      )}
+
+      {/* Mobile Navigation */}
+      {isMenuOpen && (
+        <nav className="md:hidden pt-4 pb-2 space-y-4 flex flex-col items-center animate-slideDown">
+          <NavLinks />
+        </nav>
+      )}
     </header>
   );
 };

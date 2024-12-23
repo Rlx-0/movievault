@@ -8,6 +8,7 @@ import { eventService } from "../../services/apiService";
 import { IEvent } from "../../interface/event";
 import { Link } from "react-router-dom";
 import { formatDate } from "../../utils/dateFormatter";
+import { useAuth } from "../../context/AuthContext";
 
 export const Events = () => {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ export const Events = () => {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"hosting" | "invited">("hosting");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const { userId } = useAuth();
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -62,6 +64,15 @@ export const Events = () => {
   const clearDateFilter = () => {
     setSelectedDate(null);
     setFilteredEvents(null);
+  };
+
+  const handleDeleteEvent = async (eventId: number) => {
+    try {
+      await eventService.deleteEvent(eventId);
+      setEvents(events.filter((event) => event.id !== eventId));
+    } catch (error) {
+      setError("Failed to delete event");
+    }
   };
 
   const displayEvents =
@@ -166,6 +177,8 @@ export const Events = () => {
               <EventList
                 events={displayEvents}
                 onEventClick={handleEventClick}
+                onDeleteEvent={handleDeleteEvent}
+                currentUserId={userId}
               />
             ) : (
               <div className="text-lightGray text-center py-8">
