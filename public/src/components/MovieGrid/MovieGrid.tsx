@@ -23,12 +23,12 @@ export const MovieGrid = ({ movies }: MovieGridProps) => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
       {movies.map((movie) => (
         <Link
           to={`/movie/${movie.id}`}
           key={movie.id}
-          className="bg-darkGray rounded-lg overflow-hidden hover:scale-105 transition-transform"
+          className="bg-darkGray rounded-lg overflow-hidden hover:scale-105 transition-transform focus:outline-none focus:ring-2 focus:ring-red"
         >
           <div className="aspect-[2/3] relative">
             <img
@@ -41,20 +41,20 @@ export const MovieGrid = ({ movies }: MovieGridProps) => {
               }}
             />
           </div>
-          <div className="p-4">
+          <div className="p-3 sm:p-4">
             <h3
-              className="text-white font-bold mb-2 truncate"
+              className="text-white font-bold mb-2 truncate text-sm sm:text-base"
               title={movie.title}
             >
               {movie.title}
             </h3>
             <div
-              className="text-lightGray text-sm mb-2 truncate"
+              className="text-lightGray text-xs sm:text-sm mb-2 truncate"
               title={getGenres(movie.genre_ids)}
             >
               {getGenres(movie.genre_ids)}
             </div>
-            <div className="flex justify-between items-center text-sm">
+            <div className="flex justify-between items-center text-xs sm:text-sm">
               <span className="text-lightGray">
                 {movie.release_date
                   ? new Date(movie.release_date).getFullYear()

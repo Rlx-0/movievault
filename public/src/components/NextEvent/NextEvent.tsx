@@ -132,29 +132,33 @@ export const NextEvent = () => {
 
   if (loading) {
     return (
-      <div className="bg-darkGray bg-opacity-90 p-16 rounded-3xl max-w-3xl mx-96 text-center">
-        <h2 className="text-5xl text-white font-bold mb-8">Next Event</h2>
-        <p className="text-3xl text-lightGray">Loading...</p>
+      <div className="bg-darkGray bg-opacity-90 p-8 lg:p-16 rounded-3xl w-[90%] lg:w-auto lg:min-w-[42rem] max-w-3xl mx-auto lg:mx-0 text-center">
+        <h2 className="text-3xl lg:text-5xl text-white font-bold mb-8">
+          Next Event
+        </h2>
+        <p className="text-2xl lg:text-3xl text-lightGray">Loading...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-darkGray bg-opacity-90 p-16 rounded-3xl max-w-3xl mx-96 text-center">
-        <h2 className="text-5xl text-white font-bold mb-8">Next Event</h2>
-        <p className="text-3xl text-red">{error}</p>
+      <div className="bg-darkGray bg-opacity-90 p-8 lg:p-16 rounded-3xl w-[90%] lg:w-auto lg:min-w-[42rem] max-w-3xl mx-auto lg:mx-0 text-center">
+        <h2 className="text-3xl lg:text-5xl text-white font-bold mb-8">
+          Next Event
+        </h2>
+        <p className="text-2xl lg:text-3xl text-red">{error}</p>
       </div>
     );
   }
 
   if (!nextEvent) {
     return (
-      <div className="bg-darkGray bg-opacity-90 p-8 md:p-16 rounded-3xl w-[90%] md:max-w-3xl mx-4 md:mx-96 text-center">
-        <h2 className="text-3xl md:text-5xl text-white font-bold mb-8">
+      <div className="bg-darkGray bg-opacity-90 p-8 lg:p-16 rounded-3xl w-[90%] lg:w-auto lg:min-w-[42rem] max-w-3xl mx-auto lg:mx-0 text-center">
+        <h2 className="text-3xl lg:text-5xl text-white font-bold mb-8">
           Next Event
         </h2>
-        <p className="text-2xl md:text-3xl text-lightGray">
+        <p className="text-2xl lg:text-3xl text-lightGray">
           <span className="inline-block mr-2">📅</span>
           You have no upcoming events
         </p>
@@ -167,47 +171,47 @@ export const NextEvent = () => {
 
   return (
     <div
-      className="bg-darkGray bg-opacity-90 p-8 md:p-16 rounded-3xl w-[90%] md:max-w-3xl mx-4 md:mx-96 text-center cursor-pointer hover:bg-opacity-100 transition-all duration-300"
+      className="bg-darkGray bg-opacity-90 p-8 lg:p-16 rounded-3xl w-[90%] lg:w-auto lg:min-w-[42rem] max-w-3xl mx-auto lg:mx-0 text-center cursor-pointer hover:bg-opacity-100 transition-all duration-300"
       onClick={handleClick}
     >
-      <h2 className="text-3xl md:text-5xl text-white font-bold mb-8">
+      <h2 className="text-3xl lg:text-5xl text-white font-bold mb-8">
         Next Event
       </h2>
-      <div className="flex flex-col md:flex-row gap-6 md:gap-10">
+      <div className="flex flex-col lg:flex-row gap-6 lg:gap-10">
         {firstMovie && (
-          <div className="mx-auto md:mx-0">
+          <div className="mx-auto lg:mx-0">
             <img
               src={`https://image.tmdb.org/t/p/w500${firstMovie.poster_path}`}
               alt={firstMovie.title}
-              className="w-36 md:w-48 h-54 md:h-72 object-cover rounded-lg shadow-lg"
+              className="w-36 lg:w-48 h-54 lg:h-72 object-cover rounded-lg shadow-lg"
               onError={(e) => {
                 e.currentTarget.src = placeholderImage;
               }}
             />
           </div>
         )}
-        <div className="space-y-4 md:space-y-6 text-center md:text-left flex-1">
-          <h3 className="text-2xl md:text-4xl text-white font-bold">
+        <div className="space-y-4 lg:space-y-6 text-center lg:text-left flex-1">
+          <h3 className="text-2xl lg:text-4xl text-white font-bold">
             {nextEvent.title}
           </h3>
 
-          <div className="flex items-center justify-center md:justify-start gap-3 text-xl md:text-2xl text-lightGray">
+          <div className="flex items-center justify-center lg:justify-start gap-3 text-xl lg:text-2xl text-lightGray">
             <CalendarIcon />
             <span>{formatDateTime(nextEvent.date).date}</span>
           </div>
 
-          <div className="flex items-center justify-center md:justify-start gap-3 text-lg md:text-xl text-lightGray">
+          <div className="flex items-center justify-center lg:justify-start gap-3 text-lg lg:text-xl text-lightGray">
             <ClockIcon />
             <span>{formatDateTime(nextEvent.date).time}</span>
           </div>
 
-          <div className="flex items-center justify-center md:justify-start gap-3 text-lg md:text-xl text-lightGray">
+          <div className="flex items-center justify-center lg:justify-start gap-3 text-lg lg:text-xl text-lightGray">
             <LocationIcon />
             <span>{nextEvent.location}</span>
           </div>
 
           {nextEvent.guests && (
-            <div className="flex items-center justify-center md:justify-start gap-3 text-base md:text-lg text-lightGray">
+            <div className="flex items-center justify-center lg:justify-start gap-3 text-base lg:text-lg text-lightGray">
               <UsersIcon />
               <span>
                 {nextEvent.guests.length}{" "}
@@ -217,7 +221,7 @@ export const NextEvent = () => {
           )}
 
           {nextEvent.description && (
-            <p className="text-base md:text-lg text-lightGray mt-4">
+            <p className="text-base lg:text-lg text-lightGray mt-4">
               {nextEvent.description}
             </p>
           )}

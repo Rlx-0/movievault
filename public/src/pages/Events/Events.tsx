@@ -19,6 +19,7 @@ export const Events = () => {
   const [activeTab, setActiveTab] = useState<"hosting" | "invited">("hosting");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const { userId } = useAuth();
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -78,47 +79,128 @@ export const Events = () => {
   const displayEvents =
     filteredEvents || (activeTab === "hosting" ? hostedEvents : invitedEvents);
 
+  const toggleCalendar = () => {
+    setIsCalendarOpen(!isCalendarOpen);
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-black">
       <Header />
-      <main className="flex-1 px-12 py-8">
-        <div className="flex justify-between items-center mb-8">
-          <div className="flex items-center gap-8">
-            <h1 className="text-3xl text-white font-bold">Events</h1>
-            <div className="flex gap-4">
+      <main className="flex-1 px-4 sm:px-12 py-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-8">
+          <div className="w-full sm:w-auto">
+            <div className="flex justify-between sm:hidden items-center">
+              <h1 className="text-2xl sm:text-3xl text-white font-bold">
+                Events
+              </h1>
+              <Link
+                to="/create-event"
+                className="bg-red hover:bg-red-light text-white p-2 rounded-full transition-colors"
+                aria-label="Create Event"
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 4v16m8-8H4"
+                  />
+                </svg>
+              </Link>
+            </div>
+
+            {/* Desktop layout */}
+            <div className="hidden sm:flex items-center gap-4 sm:gap-8">
+              <h1 className="text-2xl sm:text-3xl text-white font-bold">
+                Events
+              </h1>
+              <div className="flex gap-4">
+                <button
+                  className={`px-4 py-2 text-white font-medium ${
+                    activeTab === "hosting"
+                      ? "border-b-2 border-red"
+                      : "text-lightGray"
+                  }`}
+                  onClick={() => setActiveTab("hosting")}
+                >
+                  Hosting ({hostedEvents.length})
+                </button>
+                <button
+                  className={`px-4 py-2 text-white font-medium ${
+                    activeTab === "invited"
+                      ? "border-b-2 border-red"
+                      : "text-lightGray"
+                  }`}
+                  onClick={() => setActiveTab("invited")}
+                >
+                  Invited ({invitedEvents.length})
+                </button>
+              </div>
+            </div>
+
+            {/* Mobile tabs */}
+            <div className="flex sm:hidden gap-2 mt-4">
               <button
-                className={`px-4 py-2 text-white font-medium ${
+                className={`flex-1 px-2 py-2 text-white font-medium text-sm ${
                   activeTab === "hosting"
                     ? "border-b-2 border-red"
                     : "text-lightGray"
                 }`}
                 onClick={() => setActiveTab("hosting")}
               >
-                Hosting ({hostedEvents.length})
+                Host ({hostedEvents.length})
               </button>
               <button
-                className={`px-4 py-2 text-white font-medium ${
+                className={`flex-1 px-2 py-2 text-white font-medium text-sm ${
                   activeTab === "invited"
                     ? "border-b-2 border-red"
                     : "text-lightGray"
                 }`}
                 onClick={() => setActiveTab("invited")}
               >
-                Invited ({invitedEvents.length})
+                Inv ({invitedEvents.length})
               </button>
             </div>
           </div>
+
+          {/* Desktop create event button */}
           <Link
             to="/create-event"
-            className="bg-red hover:bg-red-light text-white px-6 py-2 rounded-full transition-colors"
+            className="hidden sm:block bg-red hover:bg-red-light text-white px-6 py-2 rounded-full transition-colors"
           >
             Create Event
           </Link>
         </div>
 
-        <div className="grid grid-cols-12 gap-8">
-          {/* Left column - Calendar and Upcoming Events */}
-          <div className="col-span-4 space-y-8">
+        {/* Mobile Calendar Toggle */}
+        <div className="md:hidden mb-4">
+          <button
+            onClick={toggleCalendar}
+            className="flex items-center gap-2 text-white bg-darkGray px-4 py-2 rounded-lg"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <rect x="3" y="4" width="18" height="18" rx="2" strokeWidth="2" />
+              <path d="M16 2v4M8 2v4M3 10h18" strokeWidth="2" />
+            </svg>
+            <span>
+              {selectedDate ? selectedDate.toLocaleDateString() : "Calendar"}
+            </span>
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+          {/* Calendar and Upcoming Events - Hidden on mobile */}
+          <div className="hidden md:block md:col-span-4 space-y-8">
             <Calendar events={events} onDateSelect={handleDateSelect} />
 
             <div className="bg-darkGray rounded-lg p-6">
@@ -151,8 +233,32 @@ export const Events = () => {
             </div>
           </div>
 
-          {/* Right column - Event List */}
-          <div className="col-span-8">
+          {/* Mobile Calendar Modal */}
+          {isCalendarOpen && (
+            <div className="fixed inset-0 z-50 bg-black bg-opacity-75 flex items-center justify-center p-4 md:hidden">
+              <div className="bg-darkGray rounded-lg p-4 w-full max-w-sm">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-white font-bold">Select Date</h2>
+                  <button
+                    onClick={toggleCalendar}
+                    className="text-lightGray hover:text-white"
+                  >
+                    ×
+                  </button>
+                </div>
+                <Calendar
+                  events={events}
+                  onDateSelect={(date) => {
+                    handleDateSelect(date);
+                    setIsCalendarOpen(false);
+                  }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Event List */}
+          <div className="md:col-span-8">
             {selectedDate && (
               <div className="flex justify-between items-center mb-4">
                 <p className="text-white">

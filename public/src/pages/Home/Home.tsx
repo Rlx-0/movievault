@@ -19,7 +19,7 @@ export const Home = () => {
           }}
         />
 
-        <div className="relative z-10 flex items-center justify-start min-h-[calc(100vh-8rem)] pl-24">
+        <div className="relative z-10 flex items-center justify-center lg:justify-start min-h-[calc(100vh-8rem)] px-4 lg:px-16 xl:px-60">
           <NextEvent />
         </div>
       </main>
