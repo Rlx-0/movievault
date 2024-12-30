@@ -1,5 +1,12 @@
 import { Movie } from "./movie";
 
+interface Host {
+  id: number;
+  name: string;
+  email?: string;
+  avatar?: string;
+}
+
 export interface IEvent {
   id: number;
   title: string;
@@ -8,7 +15,7 @@ export interface IEvent {
   location: string;
   movie_options: number[];
   guests: string[];
-  host: number | null;
+  host: Host | null;
   created_at?: string;
   updated_at?: string;
   invitations?: {

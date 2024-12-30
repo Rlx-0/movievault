@@ -76,9 +76,10 @@ export const EventDetails = () => {
       try {
         setLoading(true);
         const data = await eventService.getEventById(Number(id));
+        //TODO Replace with actual host data and display name
         setEvent({
           ...data,
-          host: data.host ?? null,
+          host: data.host ? { id: data.host, name: `User ${data.host}` } : null,
         });
       } catch (err) {
         setError("Failed to load event details");
@@ -179,7 +180,7 @@ export const EventDetails = () => {
                     </div>
                     <div className="flex items-center gap-3 text-lightGray">
                       <UsersIcon />
-                      <p>Hosted by {event.host?.name}</p>
+                      <p>Hosted by {event.host?.name || "Unknown Host"}</p>
                     </div>
                   </div>
                 </div>
