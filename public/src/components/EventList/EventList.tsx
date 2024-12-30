@@ -63,7 +63,7 @@ export const EventList = ({
           onClick={() => onEventClick(event.id)}
           className="bg-darkGray rounded-lg p-4 cursor-pointer hover:bg-opacity-80 relative"
         >
-          {currentUserId === event.host && onDeleteEvent && (
+          {currentUserId === event.host?.id && onDeleteEvent && (
             <button
               onClick={(e) => handleDelete(e, event.id)}
               className="absolute top-4 right-4 text-lightGray hover:text-red transition-colors"
