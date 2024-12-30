@@ -201,3 +201,20 @@ class MovieViewSet(viewsets.ModelViewSet):
                 {'error': 'Failed to fetch movie details from TMDB'},
                 status=status.HTTP_503_SERVICE_UNAVAILABLE
             )
+
+    @action(detail=False, methods=['get'], url_path='tmdb/(?P<tmdb_id>[^/.]+)/credits')
+    def tmdb_credits(self, request, tmdb_id=None):
+        """Fetch movie credits directly from TMDB"""
+        try:
+            response = requests.get(
+                self.get_tmdb_url(f'movie/{tmdb_id}/credits'),
+                params=self.get_tmdb_params()
+            )
+            response.raise_for_status()
+            return Response(response.json())
+        except requests.RequestException as e:
+            logger.error(f"TMDB API error: {str(e)}")
+            return Response(
+                {'error': 'Failed to fetch movie credits from TMDB'},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )

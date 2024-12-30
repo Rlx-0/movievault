@@ -23,12 +23,12 @@ export const MovieGrid = ({ movies }: MovieGridProps) => {
   };
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
       {movies.map((movie) => (
         <Link
-          to={`/movie/${movie.id}`}
           key={movie.id}
-          className="bg-darkGray rounded-lg overflow-hidden hover:scale-105 transition-transform focus:outline-none focus:ring-2 focus:ring-red"
+          to={`/movie/${movie.id}`}
+          className="transition-transform hover:scale-105"
         >
           <div className="aspect-[2/3] relative">
             <img

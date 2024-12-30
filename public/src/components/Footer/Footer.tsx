@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export const Footer = () => {
   return (
     <footer className="bg-black text-white py-6 sm:py-8 px-4 sm:px-8">
@@ -6,19 +8,22 @@ export const Footer = () => {
           <h3 className="font-bold mb-4">About us</h3>
           <ul className="space-y-2 text-lightGray">
             <li>
-              <a href="/about" className="hover:text-white transition-colors">
+              <Link to="/about" className="hover:text-white transition-colors">
                 About us
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="/contact" className="hover:text-white transition-colors">
+              <Link
+                to="/contact"
+                className="hover:text-white transition-colors"
+              >
                 Contact
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="/legal" className="hover:text-white transition-colors">
+              <Link to="/legal" className="hover:text-white transition-colors">
                 Legal
-              </a>
+              </Link>
             </li>
           </ul>
         </div>
@@ -27,7 +32,9 @@ export const Footer = () => {
           <h3 className="font-bold mb-4">Follow us</h3>
           <div className="flex justify-center sm:justify-start gap-6">
             <a
-              href="#"
+              href="https://facebook.com"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-lightGray hover:text-white transition-colors"
               aria-label="Facebook"
             >
@@ -36,7 +43,9 @@ export const Footer = () => {
               </svg>
             </a>
             <a
-              href="#"
+              href="https://twitter.com"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-lightGray hover:text-white transition-colors"
               aria-label="Twitter"
             >
@@ -49,9 +58,11 @@ export const Footer = () => {
 
         <div className="text-center sm:text-right">
           <h3 className="font-bold mb-4">Send us feedback</h3>
-          <button className="bg-red hover:bg-red-light text-white px-6 py-2 rounded-full transition-colors">
-            Send E-mail
-          </button>
+          <Link to="/contact">
+            <button className="bg-red hover:bg-red-light text-white px-6 py-2 rounded-full transition-colors">
+              Send E-mail
+            </button>
+          </Link>
         </div>
       </div>
     </footer>

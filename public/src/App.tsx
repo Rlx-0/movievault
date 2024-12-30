@@ -6,21 +6,32 @@ import { Login } from "./pages/Login/Login";
 import { CreateEvent } from "./pages/CreateEvent/CreateEvent";
 import { Events } from "./pages/Events/Events";
 import { EventDetails } from "./pages/EventDetails/EventDetails";
+import { About } from "./pages/Footer/About";
+import { Contact } from "./pages/Footer/Contact";
+import { Legal } from "./pages/Footer/Legal";
+import { MovieDetails } from "./pages/MovieDetails/MovieDetails";
+import { AnimatePresence } from "framer-motion";
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/search" element={<Search />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/create-event" element={<CreateEvent />} />
-          <Route path="/events" element={<Events />} />
-          <Route path="/events/:id" element={<EventDetails />} />
-        </Routes>
-      </Router>
-    </AuthProvider>
+    <AnimatePresence mode="wait">
+      <AuthProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/search" element={<Search />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/create-event" element={<CreateEvent />} />
+            <Route path="/events" element={<Events />} />
+            <Route path="/events/:id" element={<EventDetails />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/legal" element={<Legal />} />
+            <Route path="/movie/:id" element={<MovieDetails />} />
+          </Routes>
+        </Router>
+      </AuthProvider>
+    </AnimatePresence>
   );
 }
 

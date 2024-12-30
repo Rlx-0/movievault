@@ -12,6 +12,19 @@ export interface Movie {
   genre_ids: number[];
   original_language: string;
   original_title: string;
+  status?: string;
+  budget?: number;
+  revenue?: number;
+  production_companies?: {
+    id: number;
+    name: string;
+    logo_path: string | null;
+    origin_country: string;
+  }[];
+  production_countries?: {
+    iso_3166_1: string;
+    name: string;
+  }[];
 }
 
 export interface MovieResponse {

@@ -24,7 +24,10 @@ export const EventDetails = ({ formData, onFormChange }: EventDetailsProps) => {
 
   useEffect(() => {
     const fetchSelectedMovies = async () => {
-      if (formData.movie_options.length === 0) return;
+      if (formData.movie_options.length === 0) {
+        setSelectedMovies([]);
+        return;
+      }
 
       try {
         setLoading(true);
@@ -43,7 +46,7 @@ export const EventDetails = ({ formData, onFormChange }: EventDetailsProps) => {
     };
 
     fetchSelectedMovies();
-  }, []);
+  }, [formData.movie_options]);
 
   const handleMovieSelect = (movie: Movie) => {
     if (!formData.movie_options.includes(movie.id)) {

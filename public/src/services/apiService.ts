@@ -35,6 +35,23 @@ interface IVoteRequest {
   vote: boolean | null;
 }
 
+interface MovieCredits {
+  cast: {
+    id: number;
+    name: string;
+    character: string;
+    profile_path: string | null;
+    order: number;
+  }[];
+  crew: {
+    id: number;
+    name: string;
+    job: string;
+    department: string;
+    profile_path: string | null;
+  }[];
+}
+
 export const movieService = {
   searchMovies: async (query: string, signal?: AbortSignal) => {
     try {
@@ -65,6 +82,17 @@ export const movieService = {
     try {
       const response = await get<MovieResponse>(
         `${API_BASE_URL}/movies/popular/`
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
+  },
+
+  getMovieCredits: async (id: number) => {
+    try {
+      const response = await get<MovieCredits>(
+        `${API_BASE_URL}/movies/tmdb/${id}/credits/`
       );
       return response.data;
     } catch (error) {
