@@ -10,6 +10,7 @@ from django.urls import reverse
 from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives
 from django.core.signing import Signer
+from django.contrib.auth import get_user_model
 
 class MovieVoteSerializer(serializers.ModelSerializer):
     class Meta:
@@ -19,8 +20,12 @@ class MovieVoteSerializer(serializers.ModelSerializer):
 class EventInvitationSerializer(serializers.ModelSerializer):
     class Meta:
         model = EventInvitation
-        fields = ['id', 'event', 'email', 'status', 'created_at']
-        read_only_fields = ['created_at']
+        fields = ['email', 'status', 'created_at', 'updated_at']
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        fields = ['id', 'username', 'email']
 
 class EventSerializer(serializers.ModelSerializer):
     movie_votes = MovieVoteSerializer(many=True, read_only=True)
@@ -38,11 +43,13 @@ class EventSerializer(serializers.ModelSerializer):
     title = serializers.CharField(max_length=100, required=True)
     description = serializers.CharField(max_length=1000, required=False, allow_blank=True)
     date = serializers.DateTimeField(required=True)
+    invitations = serializers.SerializerMethodField()
+    host = UserSerializer(read_only=True)
 
     class Meta:
         model = Event
         fields = ['id', 'title', 'description', 'date', 'location', 
-                 'guests', 'host', 'movie_options', 'movie_votes']
+                 'guests', 'host', 'movie_options', 'movie_votes', 'invitations']
         read_only_fields = ['host']
 
     def validate(self, data):
@@ -158,3 +165,11 @@ class EventSerializer(serializers.ModelSerializer):
             email_message.send(fail_silently=False)
         
         return event
+
+    def get_invitations(self, obj):
+        return [{
+            'email': inv.email,
+            'status': inv.status,
+            'created_at': inv.created_at,
+            'updated_at': inv.updated_at
+        } for inv in obj.invitations.all()]

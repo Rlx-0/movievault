@@ -25,13 +25,13 @@ class EventViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        if self.action == 'respond_to_invitation':
-            return Event.objects.all()
-        
-        return Event.objects.filter(
-            Q(host=self.request.user) |
-            Q(invitations__email=self.request.user.email)
-        )
+        queryset = Event.objects.prefetch_related('invitations')
+        return queryset
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 
     @action(detail=True, methods=['POST'])
     def vote(self, request, pk=None):
