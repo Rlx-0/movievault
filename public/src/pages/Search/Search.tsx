@@ -79,7 +79,7 @@ export const Search = () => {
   return (
     <PageTransition>
       <div className="min-h-screen flex flex-col bg-black">
-        <Header onSearch={handleSearch} />
+        <Header />
         <main className="flex-1 px-4 md:px-12 py-8">
           <div className="md:hidden mb-4">
             <button

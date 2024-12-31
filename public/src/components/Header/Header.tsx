@@ -2,11 +2,7 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
-interface HeaderProps {
-  onSearch?: (query: string) => Promise<void>;
-}
-
-export const Header = ({ onSearch }: HeaderProps) => {
+export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
