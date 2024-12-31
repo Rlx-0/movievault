@@ -62,11 +62,14 @@ export const Search = () => {
     const queryParam = searchParams.get("q");
     const stateQuery = location.state?.searchQuery;
 
-    if (stateQuery) {
-      handleSearch(stateQuery);
-    } else if (queryParam) {
+    if (queryParam) {
+      setSearchQuery(queryParam);
       handleSearch(queryParam);
+    } else if (stateQuery) {
+      setSearchQuery(stateQuery);
+      handleSearch(stateQuery);
     } else {
+      setSearchQuery("");
       fetchPopularMovies();
     }
   }, [location]);
