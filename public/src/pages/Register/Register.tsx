@@ -1,24 +1,32 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { PageTransition } from "../../components/Animation/PageTransition";
+import { Link } from "react-router-dom";
 
-export const Login = () => {
+export const Register = () => {
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { register } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
     try {
-      await login(username, password);
+      await register(username, email, password);
       navigate("/");
-    } catch (err) {
-      setError("Invalid username or password");
+    } catch (err: any) {
+      setError(err.message || "Failed to create account");
     }
   };
 
@@ -26,7 +34,7 @@ export const Login = () => {
     <PageTransition>
       <div className="min-h-screen flex items-center justify-center bg-black">
         <div className="bg-darkGray p-8 rounded-lg w-96">
-          <h1 className="text-2xl text-white font-bold mb-6">Login</h1>
+          <h1 className="text-2xl text-white font-bold mb-6">Create Account</h1>
           {error && <div className="text-red mb-4">{error}</div>}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -36,6 +44,17 @@ export const Login = () => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="w-full bg-black text-white p-2 rounded"
+                required
+              />
+            </div>
+            <div>
+              <label className="text-lightGray block mb-1">Email</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full bg-black text-white p-2 rounded"
+                required
               />
             </div>
             <div>
@@ -45,19 +64,32 @@ export const Login = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full bg-black text-white p-2 rounded"
+                required
+              />
+            </div>
+            <div>
+              <label className="text-lightGray block mb-1">
+                Confirm Password
+              </label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full bg-black text-white p-2 rounded"
+                required
               />
             </div>
             <button
               type="submit"
               className="w-full bg-red hover:bg-red-light text-white py-2 rounded-full"
             >
-              Login
+              Create Account
             </button>
           </form>
           <p className="text-lightGray mt-4 text-center">
-            Don't have an account?{" "}
-            <Link to="/register" className="text-red hover:text-red-light">
-              Create one here
+            Already have an account?{" "}
+            <Link to="/login" className="text-red hover:text-red-light">
+              Log in
             </Link>
           </p>
         </div>

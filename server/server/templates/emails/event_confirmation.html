@@ -1,0 +1,25 @@
+{% extends "emails/base_email.html" %} {% block title %}Event Response
+Confirmed{% endblock %} {% block content %}
+<p>Hi {{ recipient_name }},</p>
+
+<p>Your response has been recorded for:</p>
+
+<div class="event-details">
+  <h2>{{ event.title }}</h2>
+  <p><strong>When:</strong> {{ event.date }}</p>
+  <p><strong>Where:</strong> {{ event.location }}</p>
+  {% if event.description %}
+  <p><strong>Description:</strong> {{ event.description }}</p>
+  {% endif %}
+</div>
+
+<p style="text-align: center; font-size: 18px; margin: 20px 0">
+  You have <strong>{{ status }}</strong> this event
+</p>
+
+{% if status == "accepted" %}
+<p>
+  We've added this event to your upcoming events list. You can view the full
+  details and vote on movies anytime by visiting the event page.
+</p>
+{% endif %} {% endblock %}

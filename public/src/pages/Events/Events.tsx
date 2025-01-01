@@ -19,7 +19,7 @@ export const Events = () => {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"hosting" | "invited">("hosting");
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const { userId } = useAuth();
+  const { userId, userEmail } = useAuth();
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   useEffect(() => {
@@ -38,8 +38,20 @@ export const Events = () => {
     fetchEvents();
   }, []);
 
-  const hostedEvents = events.filter((event) => event.host !== null);
-  const invitedEvents = events.filter((event) => event.host === null);
+  const hostedEvents = events.filter((event) => event.host?.id === userId);
+  const invitedEvents = events.filter((event) => {
+    if (!userEmail) {
+      return false;
+    }
+
+    const isInvited = event.invitations?.some(
+      (inv) =>
+        inv.email.toLowerCase() === userEmail.toLowerCase() &&
+        (inv.status === "pending" || inv.status === "accepted")
+    );
+
+    return isInvited;
+  });
 
   const upcomingEvents = events
     .filter((event) => new Date(event.date) >= new Date())

@@ -5,6 +5,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)
         data['userId'] = self.user.id
+        data['email'] = self.user.email
         return data
 
 class CustomTokenObtainPairView(TokenObtainPairView):

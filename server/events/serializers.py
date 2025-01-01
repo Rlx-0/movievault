@@ -139,7 +139,7 @@ class EventSerializer(serializers.ModelSerializer):
                 'rsvp_no_url': request.build_absolute_uri(
                     reverse('event-respond-to-invitation', kwargs={'pk': event.id}) + f'?token={token}&status=no'
                 ),
-                'site_name': 'Movie Night',
+                'site_name': 'MovieVault',
                 'contact_email': settings.DEFAULT_FROM_EMAIL,
             }
             

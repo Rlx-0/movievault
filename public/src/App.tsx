@@ -11,6 +11,7 @@ import { Contact } from "./pages/Footer/Contact";
 import { Legal } from "./pages/Footer/Legal";
 import { MovieDetails } from "./pages/MovieDetails/MovieDetails";
 import { AnimatePresence } from "framer-motion";
+import { Register } from "./pages/Register/Register";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/legal" element={<Legal />} />
             <Route path="/movie/:id" element={<MovieDetails />} />
+            <Route path="/register" element={<Register />} />
           </Routes>
         </Router>
       </AuthProvider>

@@ -28,6 +28,7 @@ interface ITokenResponse {
   access: string;
   refresh: string;
   userId: number;
+  email: string;
 }
 
 interface IVoteRequest {
@@ -226,12 +227,13 @@ export const eventService = {
 };
 
 export const authService = {
-  register: async (userData: Partial<IUser>) => {
+  register: async (username: string, email: string, password: string) => {
     try {
-      const response = await post<IUser>(
-        `${API_BASE_URL}/user/register/`,
-        userData
-      );
+      const response = await post<IUser>(`${API_BASE_URL}/user/register/`, {
+        username,
+        email,
+        password,
+      });
       return response.data;
     } catch (error) {
       throw new Error(handleApiError(error));

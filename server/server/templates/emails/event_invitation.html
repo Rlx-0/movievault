@@ -1,82 +1,17 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <style>
-      .email-container {
-        max-width: 600px;
-        margin: 0 auto;
-        font-family: Arial, sans-serif;
-        color: #333;
-      }
-      .header {
-        background-color: #4a90e2;
-        color: white;
-        padding: 20px;
-        text-align: center;
-      }
-      .content {
-        padding: 20px;
-        background-color: #f9f9f9;
-      }
-      .button {
-        display: inline-block;
-        padding: 10px 20px;
-        margin: 10px;
-        border-radius: 5px;
-        text-decoration: none;
-        color: white;
-        font-weight: bold;
-      }
-      .accept {
-        background-color: #4caf50;
-      }
-      .decline {
-        background-color: #f44336;
-      }
-      .event-details {
-        margin: 20px 0;
-        padding: 15px;
-        background-color: white;
-        border-radius: 5px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="email-container">
-      <div class="header">
-        <h1>Movie Night Invitation</h1>
-      </div>
-      <div class="content">
-        <h2>Hello {{ recipient_name }},</h2>
-        <p>{{ host_name }} has invited you to {{ event.title }}!</p>
-
-        <div class="event-details">
-          <p><strong>Date:</strong> {{ event.date }}</p>
-          <p><strong>Location:</strong> {{ event.location }}</p>
-          {% if event.description %}
-          <p><strong>Description:</strong> {{ event.description }}</p>
-          {% endif %}
-        </div>
-
-        <div style="text-align: center">
-          <a href="{{ rsvp_yes_url }}" class="button accept"
-            >Accept Invitation</a
-          >
-          <a href="{{ rsvp_no_url }}" class="button decline"
-            >Decline Invitation</a
-          >
-        </div>
-
-        <p style="margin-top: 20px; font-size: 0.9em; color: #666">
-          If the buttons don't work, you can copy and paste these links into
-          your browser:
-        </p>
-        <p style="font-size: 0.8em; color: #666">
-          Accept: {{ rsvp_yes_url }}<br />
-          Decline: {{ rsvp_no_url }}
-        </p>
-      </div>
-    </div>
-  </body>
-</html>
+{% extends "emails/base_email.html" %}
+{% block title %}You're Invited to {{ event.title }}!{% endblock %}
+{% block content %}
+<p>Hi {{ recipient_name }},</p>
+<p>{{ host_name }} has invited you to a movie night!</p>
+<div class="event-details">
+  <h2>{{ event.title }}</h2>
+  <p><strong>When:</strong> {{ event.date }}</p>
+  <p><strong>Where:</strong> {{ event.location }}</p>
+  {% if event.description %}<p><strong>Description:</strong> {{ event.description }}</p>{% endif %}
+</div>
+<div style="text-align: center">
+  <p>Will you be joining us?</p>
+  <a href="{{ rsvp_yes_url }}" class="button" style="color: #161616">Yes, I'll be there!</a>
+  <a href="{{ rsvp_no_url }}" class="button" style="background-color: #D9D9D9; color: #161616">Sorry, can't make it</a>
+</div>
+{% endblock %}

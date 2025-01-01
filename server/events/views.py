@@ -8,11 +8,12 @@ from django.conf import settings
 from django.utils import timezone
 from django.core.signing import Signer
 from django.http import HttpResponse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+from django.db import models
 
 from movies.models import Movie
 from movies.serializers import MovieSerializer
@@ -24,9 +25,17 @@ class EventViewSet(viewsets.ModelViewSet):
     serializer_class = EventSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_permissions(self):
+        if self.action == 'preview_email':
+            return []
+        return [permission() for permission in self.permission_classes]
+
     def get_queryset(self):
-        queryset = Event.objects.prefetch_related('invitations')
-        return queryset
+        user = self.request.user
+        return Event.objects.filter(
+            models.Q(host=user) |  # Events hosted by the user
+            models.Q(invitations__email=user.email)  # Events where user is invited
+        ).prefetch_related('invitations').distinct()
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -108,7 +117,7 @@ class EventViewSet(viewsets.ModelViewSet):
                     'rsvp_no_url': request.build_absolute_uri(
                         reverse('event-respond-to-invitation', kwargs={'pk': event.id}) + f'?token={token}&status=no'
                     ),
-                    'site_name': 'Movie Night',
+                    'site_name': 'MovieVault',
                     'contact_email': settings.DEFAULT_FROM_EMAIL,
                 }
                 
@@ -242,14 +251,13 @@ class EventViewSet(viewsets.ModelViewSet):
         email.mixed_subtype = 'related'
         email.send(fail_silently=False)
 
-        # For GET requests, return a user-friendly HTML response
+        # For GET requests, return a HTML response
         if request.method == 'GET':
             return HttpResponse(
                 f"Thank you for your response! You have {invitation.status} "
                 f"the invitation to {event.title}."
             )
-        
-        # For API requests, return JSON
+
         return Response(EventInvitationSerializer(invitation).data)
 
     @action(detail=True, methods=['get'])
@@ -309,3 +317,27 @@ class EventViewSet(viewsets.ModelViewSet):
             )
 
         return Response({'status': 'Movie selection finalized'})
+
+    @action(detail=False, methods=['get'])
+    def preview_email(self, request):
+        """Preview email templates"""
+        template_name = request.GET.get('template', 'event_invitation')
+        
+        context = {
+            'event': {
+                'title': 'Sample Movie Night',
+                'date': 'September 15, 2024 at 7:00 PM',
+                'location': '123 Movie Street',
+                'description': 'Join us for a fun movie night with snacks and drinks!',
+            },
+            'recipient_name': 'John',
+            'host_name': 'Sarah',
+            'status': request.GET.get('status', 'accepted'),
+            'site_name': 'MovieVault',
+            'contact_email': settings.DEFAULT_FROM_EMAIL,
+            'rsvp_yes_url': '#',
+            'rsvp_no_url': '#',
+        }
+        
+        template = f'emails/{template_name}.html'
+        return render(request, template, context)
