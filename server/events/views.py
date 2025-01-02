@@ -158,22 +158,29 @@ class EventViewSet(viewsets.ModelViewSet):
         event = self.get_object()
         results = {}
 
-        for movie_id in event.movie_options:
-            upvotes = MovieVote.objects.filter(
-                event=event,
-                movie_id=movie_id,
-                vote=True
-            ).count()
-            downvotes = MovieVote.objects.filter(
-                event=event,
-                movie_id=movie_id,
-                vote=False
-            ).count()
+        for tmdb_id in event.movie_options:
+            try:
+                movie = Movie.objects.get(tmdb_id=tmdb_id)
+                upvotes = MovieVote.objects.filter(
+                    event=event,
+                    movie=movie,
+                    vote=True
+                ).count()
+                downvotes = MovieVote.objects.filter(
+                    event=event,
+                    movie=movie,
+                    vote=False
+                ).count()
 
-            results[movie_id] = {
-                'upvotes': upvotes,
-                'downvotes': downvotes
-            }
+                results[tmdb_id] = {
+                    'upvotes': upvotes,
+                    'downvotes': downvotes
+                }
+            except Movie.DoesNotExist:
+                results[tmdb_id] = {
+                    'upvotes': 0,
+                    'downvotes': 0
+                }
 
         return Response(results)
 
