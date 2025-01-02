@@ -26,8 +26,7 @@ export const Tutorial = () => {
           {
             element: ".next-event",
             title: "Your Next Event",
-            intro:
-              "Here you'll see your upcoming movie night. Click here to view details!",
+            intro: "Here you'll see your upcoming movie night!",
             position: "bottom",
             tooltipClass: "custom-tooltip",
           },

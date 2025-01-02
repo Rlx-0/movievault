@@ -298,6 +298,32 @@ export const Events = () => {
                 <div className="text-white text-center py-8">
                   Loading events...
                 </div>
+              ) : !userId ? (
+                <div className="bg-darkGray rounded-lg p-8 text-center">
+                  <h2 className="text-2xl text-white font-bold mb-4">
+                    Authentication Required
+                  </h2>
+                  <p className="text-lightGray mb-6">
+                    Please log in to view and manage your events
+                  </p>
+                  <div className="space-y-4">
+                    <Link
+                      to="/login"
+                      className="inline-block bg-red hover:bg-red-light text-white px-6 py-2 rounded-full transition-colors"
+                    >
+                      Login
+                    </Link>
+                    <p className="text-sm text-lightGray">
+                      Don't have an account?{" "}
+                      <Link
+                        to="/register"
+                        className="text-red hover:text-red-light"
+                      >
+                        Sign up
+                      </Link>
+                    </p>
+                  </div>
+                </div>
               ) : error ? (
                 <div className="text-red text-center py-8">{error}</div>
               ) : displayEvents.length > 0 ? (

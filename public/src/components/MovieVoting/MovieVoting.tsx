@@ -102,7 +102,7 @@ export const MovieVoting = ({ eventId, movieOptions }: MovieVotingProps) => {
                   </span>
                 </div>
 
-                <div className="flex gap-3">
+                <div className="flex flex-wrap items-center gap-3">
                   <button
                     onClick={() => handleVote(movie.id, true)}
                     className={`flex items-center gap-2 px-4 py-2 rounded transition-all duration-200 ${
@@ -131,7 +131,7 @@ export const MovieVoting = ({ eventId, movieOptions }: MovieVotingProps) => {
                     </span>
                   </button>
 
-                  <span className="text-sm text-lightGray self-center ml-2">
+                  <span className="text-sm text-lightGray">
                     {(votes[movie.id]?.upvotes || 0) +
                       (votes[movie.id]?.downvotes || 0)}{" "}
                     votes

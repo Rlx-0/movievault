@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { IEvent } from "../../interface/event";
 import { eventService, movieService } from "../../services/apiService";
 import { Movie } from "../../interface/movie";
 import placeholderImage from "../../img/Placeholder.png";
+import { useAuth } from "../../context/AuthContext";
 
 const CalendarIcon = () => (
   <svg
@@ -61,6 +62,7 @@ const UsersIcon = () => (
 );
 
 export const NextEvent = () => {
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [nextEvent, setNextEvent] = useState<IEvent | null>(null);
   const [movieDetails, setMovieDetails] = useState<Record<number, Movie>>({});
@@ -143,18 +145,32 @@ export const NextEvent = () => {
 
   if (error) {
     return (
-      <div className="bg-darkGray bg-opacity-90 p-8 lg:p-16 rounded-3xl w-[90%] lg:w-auto lg:min-w-[42rem] max-w-3xl mx-auto lg:mx-0 text-center">
+      <div className="bg-darkGray bg-opacity-90 p-8 lg:p-16 rounded-3xl w-[90%] lg:w-auto lg:min-w-[42rem] max-w-3xl mx-auto lg:mx-0 text-center next-event">
         <h2 className="text-3xl lg:text-5xl text-white font-bold mb-8">
           Next Event
         </h2>
-        <p className="text-2xl lg:text-3xl text-red">{error}</p>
+        {!isAuthenticated ? (
+          <div className="space-y-4">
+            <p className="text-xl lg:text-2xl text-lightGray">
+              Please log in to view your upcoming events
+            </p>
+            <Link
+              to="/login"
+              className="inline-block bg-red hover:bg-red-light text-white px-6 py-2 rounded-full transition-colors"
+            >
+              Log In
+            </Link>
+          </div>
+        ) : (
+          <p className="text-xl lg:text-2xl text-red">{error}</p>
+        )}
       </div>
     );
   }
 
   if (!nextEvent) {
     return (
-      <div className="bg-darkGray bg-opacity-90 p-8 lg:p-16 rounded-3xl w-[90%] lg:w-auto lg:min-w-[42rem] max-w-3xl mx-auto lg:mx-0 text-center">
+      <div className="bg-darkGray bg-opacity-90 p-8 lg:p-16 rounded-3xl w-[90%] lg:w-auto lg:min-w-[42rem] max-w-3xl mx-auto lg:mx-0 text-center next-event">
         <h2 className="text-3xl lg:text-5xl text-white font-bold mb-8">
           Next Event
         </h2>

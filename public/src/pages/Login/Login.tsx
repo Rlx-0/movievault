@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { PageTransition } from "../../components/Animation/PageTransition";
 
@@ -16,7 +16,14 @@ export const Login = () => {
 
     try {
       await login(username, password);
-      navigate("/");
+
+      const redirectPath = localStorage.getItem("redirectPath");
+      if (redirectPath) {
+        localStorage.removeItem("redirectPath");
+        navigate(redirectPath);
+      } else {
+        navigate("/");
+      }
     } catch (err) {
       setError("Invalid username or password");
     }

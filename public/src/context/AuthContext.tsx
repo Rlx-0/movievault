@@ -49,6 +49,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setIsAuthenticated(false);
     setUserId(null);
     setUserEmail(null);
+    window.location.href = "/";
   };
 
   const register = async (

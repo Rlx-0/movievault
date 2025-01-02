@@ -7,8 +7,9 @@ import { IEvent, Invitation } from "../../interface/event";
 import { MovieVoting } from "../../components/MovieVoting/MovieVoting";
 import { formatDate } from "../../utils/dateFormatter";
 import { PageTransition } from "../../components/Animation/PageTransition";
+import { Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
-// Icon Components
 const CalendarIcon = () => (
   <svg
     className="w-5 h-5"
@@ -58,8 +59,13 @@ export const EventDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [guests, setGuests] = useState<Invitation[]>([]);
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      setError("Authentication required");
+      return;
+    }
     const fetchEvent = async () => {
       try {
         setLoading(true);
@@ -140,7 +146,47 @@ export const EventDetails = () => {
     return <div className="text-white">Loading...</div>;
   }
 
-  if (error || !event) {
+  if (error) {
+    return (
+      <div className="min-h-screen flex flex-col bg-black">
+        <Header />
+        <div className="flex-1 flex items-center justify-center p-4">
+          <div className="bg-darkGray p-8 rounded-lg max-w-md w-full text-center">
+            <h2 className="text-2xl text-white font-bold mb-4">
+              {!isAuthenticated ? "Authentication Required" : "Error"}
+            </h2>
+            <p className="text-lightGray mb-6">
+              {!isAuthenticated
+                ? "Please log in to view event details"
+                : "Failed to load event details"}
+            </p>
+            {!isAuthenticated && (
+              <div className="space-y-4">
+                <Link
+                  to="/login"
+                  className="inline-block bg-red hover:bg-red-light text-white px-6 py-2 rounded-full transition-colors"
+                >
+                  Log In
+                </Link>
+                <p className="text-sm text-lightGray">
+                  Don't have an account?{" "}
+                  <Link
+                    to="/register"
+                    className="text-red hover:text-red-light"
+                  >
+                    Sign up
+                  </Link>
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!event) {
     return (
       <div className="min-h-screen flex flex-col bg-black">
         <Header />
@@ -163,7 +209,6 @@ export const EventDetails = () => {
             </h1>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Main Event Details */}
               <div className="lg:col-span-2 space-y-8">
                 <div className="bg-darkGray rounded-lg p-8">
                   <div className="space-y-4">
@@ -207,32 +252,36 @@ export const EventDetails = () => {
                 </div>
               </div>
 
-              {/* Guest List */}
-              <div className="bg-darkGray rounded-lg p-8 h-fit">
-                <h2 className="text-2xl text-white font-bold mb-6">
-                  Guest List
-                </h2>
-                <div className="space-y-4">
-                  {guests.length > 0 ? (
-                    guests.map((guest) => (
-                      <div
-                        key={guest.email}
-                        className="flex items-center justify-between p-3 bg-black rounded-lg"
-                      >
-                        <div className="flex items-center gap-3">
-                          {getStatusIcon(guest.status)}
-                          <span className="text-white">{guest.email}</span>
+              {/* Guest List - Now sticky on desktop */}
+              <div className="lg:sticky lg:top-8 h-fit">
+                <div className="bg-darkGray rounded-lg p-8">
+                  <h2 className="text-2xl text-white font-bold mb-6">
+                    Guest List
+                  </h2>
+                  <div className="space-y-3">
+                    {guests.length > 0 ? (
+                      guests.map((guest) => (
+                        <div
+                          key={guest.email}
+                          className="flex items-center justify-between p-3 bg-black rounded-lg hover:bg-opacity-50 transition-colors"
+                        >
+                          <div className="flex items-center gap-3 min-w-0">
+                            {getStatusIcon(guest.status)}
+                            <span className="text-white truncate">
+                              {guest.email}
+                            </span>
+                          </div>
+                          <span className="text-sm text-lightGray capitalize ml-3 flex-shrink-0">
+                            {guest.status}
+                          </span>
                         </div>
-                        <span className="text-sm text-lightGray capitalize">
-                          {guest.status}
-                        </span>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-lightGray text-sm">
-                      No guests invited yet
-                    </p>
-                  )}
+                      ))
+                    ) : (
+                      <p className="text-lightGray text-sm">
+                        No guests invited yet
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

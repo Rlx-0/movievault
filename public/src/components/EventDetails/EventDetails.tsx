@@ -15,6 +15,7 @@ interface EventFormData {
 interface EventDetailsProps {
   formData: EventFormData;
   onFormChange: (updates: Partial<EventFormData>) => void;
+  validationErrors?: Record<string, string>;
   className?: string;
 }
 
@@ -137,7 +138,7 @@ export const EventDetails = ({
               type="date"
               value={formData.date}
               onChange={(e) => onFormChange({ date: e.target.value })}
-              className="w-full bg-black text-white p-2 rounded"
+              className="w-full bg-black text-white p-2 rounded [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:opacity-50 hover:[&::-webkit-calendar-picker-indicator]:opacity-100"
               required
             />
           </div>
@@ -147,7 +148,7 @@ export const EventDetails = ({
               type="time"
               value={formData.time}
               onChange={(e) => onFormChange({ time: e.target.value })}
-              className="w-full bg-black text-white p-2 rounded"
+              className="w-full bg-black text-white p-2 rounded [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:opacity-50 hover:[&::-webkit-calendar-picker-indicator]:opacity-100"
               required
             />
           </div>

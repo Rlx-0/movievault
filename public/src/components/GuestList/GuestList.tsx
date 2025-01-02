@@ -3,6 +3,7 @@ import { useState } from "react";
 interface GuestListProps {
   guests: string[];
   onGuestsChange: (guests: string[]) => void;
+  validationError?: string;
   className?: string;
 }
 
