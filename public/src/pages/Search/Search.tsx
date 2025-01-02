@@ -159,7 +159,7 @@ export const Search = () => {
               ) : error ? (
                 <div className="text-red text-center py-8">{error}</div>
               ) : (
-                <MovieGrid movies={filteredMovies} className="movie-grid" />
+                <MovieGrid movies={filteredMovies} />
               )}
             </div>
           </div>

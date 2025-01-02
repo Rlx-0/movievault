@@ -88,10 +88,8 @@ export const Tutorial = () => {
             tooltipClass: "custom-tooltip",
           },
           {
-            element: ".movie-grid",
             title: "Movie Results",
             intro: "Click on any movie to see more details!",
-            position: "top",
             tooltipClass: "custom-tooltip",
           },
         ],
