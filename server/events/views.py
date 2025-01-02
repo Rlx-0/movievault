@@ -32,9 +32,17 @@ class EventViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        return Event.objects.filter(
-            models.Q(host=user) |  # Events hosted by the user
-            models.Q(invitations__email=user.email)  # Events where user is invited
+        base_query = Event.objects.all()
+        
+        if self.action == 'respond_to_invitation':
+            return base_query
+        
+        if user.is_anonymous:
+            return Event.objects.none()
+        
+        return base_query.filter(
+            models.Q(host=user) |
+            models.Q(invitations__email=user.email)
         ).prefetch_related('invitations').distinct()
 
     def retrieve(self, request, *args, **kwargs):
@@ -253,10 +261,16 @@ class EventViewSet(viewsets.ModelViewSet):
 
         # For GET requests, return a HTML response
         if request.method == 'GET':
-            return HttpResponse(
-                f"Thank you for your response! You have {invitation.status} "
-                f"the invitation to {event.title}."
-            )
+            context = {
+                'event': {
+                    'title': event.title,
+                    'date': event.date.strftime('%B %d, %Y at %I:%M %p'),
+                    'location': event.location,
+                    'description': event.description,
+                },
+                'status': invitation.status
+            }
+            return render(request, 'events/rsvp_response.html', context)
 
         return Response(EventInvitationSerializer(invitation).data)
 
