@@ -179,6 +179,7 @@ export const CreateEvent = () => {
                 guests={formData.guests}
                 onGuestsChange={(guests) => handleFormChange({ guests })}
                 validationError={validationErrors.guests}
+                className="guest-list-input"
               />
             </div>
             <div className="w-full md:w-80">
