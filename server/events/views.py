@@ -63,20 +63,19 @@ class EventViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Validate that the movie is in the event's options
         if movie_id not in event.movie_options:
             return Response(
                 {'error': 'Invalid movie ID for this event'},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        movie, _ = Movie.objects.get_or_create(
-            id=movie_id,
-            defaults={
-                'title': 'Temporary Title',
-                'tmdb_id': movie_id
-            }
-        )
+        try:
+            movie = Movie.objects.get(tmdb_id=movie_id)
+        except Movie.DoesNotExist:
+            movie = Movie.objects.create(
+                tmdb_id=movie_id,
+                title='Temporary Title'
+            )
 
         vote, created = MovieVote.objects.update_or_create(
             event=event,
