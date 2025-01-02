@@ -264,3 +264,18 @@ export const authService = {
     }
   },
 };
+
+export const contactService = {
+  submitContactForm: async (formData: {
+    name: string;
+    email: string;
+    message: string;
+  }) => {
+    try {
+      const response = await post(`${API_BASE_URL}/contact/`, formData);
+      return response.data;
+    } catch (error) {
+      throw new Error(handleApiError(error));
+    }
+  },
+};

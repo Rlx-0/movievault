@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { PageTransition } from "../../components/Animation/PageTransition";
 import { Link } from "react-router-dom";
+import Loading from "../../components/Animation/Loading";
 
 export const Register = () => {
   const [username, setUsername] = useState("");
@@ -10,11 +11,13 @@ export const Register = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { register } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     setError(null);
 
     if (password !== confirmPassword) {
@@ -27,6 +30,8 @@ export const Register = () => {
       navigate("/");
     } catch (err: any) {
       setError(err.message || "Failed to create account");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -81,9 +86,10 @@ export const Register = () => {
             </div>
             <button
               type="submit"
+              disabled={loading}
               className="w-full bg-red hover:bg-red-light text-white py-2 rounded-full"
             >
-              Create Account
+              {loading ? <Loading size="small" /> : "Create Account"}
             </button>
           </form>
           <p className="text-lightGray mt-4 text-center">

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { movieService, eventService } from "../../services/apiService";
 import { Movie } from "../../interface/movie";
 import { VoteResults } from "../../interface/api";
+import Loading from "../Animation/Loading";
 
 interface MovieVotingProps {
   eventId: number;
@@ -76,7 +77,14 @@ export const MovieVoting = ({ eventId, movieOptions }: MovieVotingProps) => {
     </svg>
   );
 
-  if (loading) return <div className="text-white">Loading movies...</div>;
+  if (loading) {
+    return (
+      <div className="flex justify-center py-8">
+        <Loading size="small" />
+      </div>
+    );
+  }
+
   if (error) return <div className="text-red">{error}</div>;
 
   return (

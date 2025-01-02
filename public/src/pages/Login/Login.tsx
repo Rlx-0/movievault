@@ -2,21 +2,23 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { PageTransition } from "../../components/Animation/PageTransition";
+import Loading from "../../components/Animation/Loading";
 
 export const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setLoading(true);
 
     try {
       await login(username, password);
-
       const redirectPath = localStorage.getItem("redirectPath");
       if (redirectPath) {
         localStorage.removeItem("redirectPath");
@@ -26,6 +28,8 @@ export const Login = () => {
       }
     } catch (err) {
       setError("Invalid username or password");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -56,9 +60,10 @@ export const Login = () => {
             </div>
             <button
               type="submit"
-              className="w-full bg-red hover:bg-red-light text-white py-2 rounded-full"
+              disabled={loading}
+              className="w-full bg-red hover:bg-red-light text-white py-2 rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Login
+              {loading ? <Loading size="small" /> : "Login"}
             </button>
           </form>
           <p className="text-lightGray mt-4 text-center">

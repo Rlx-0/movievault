@@ -1,0 +1,15 @@
+{% extends "emails/base_email.html" %}
+
+{% block title %}New Contact Form Message{% endblock %}
+
+{% block content %}
+<div style="padding: 20px;">
+    <h2>New Message from {{ name }}</h2>
+    
+    <div class="event-details">
+        <p><strong>From:</strong> {{ name }} ({{ email }})</p>
+        <p><strong>Message:</strong></p>
+        <p style="white-space: pre-wrap;">{{ message }}</p>
+    </div>
+</div>
+{% endblock %}

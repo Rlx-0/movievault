@@ -9,6 +9,7 @@ import { formatDate } from "../../utils/dateFormatter";
 import { PageTransition } from "../../components/Animation/PageTransition";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import Loading from "../../components/Animation/Loading";
 
 const CalendarIcon = () => (
   <svg
@@ -143,7 +144,11 @@ export const EventDetails = () => {
   };
 
   if (loading) {
-    return <div className="text-white">Loading...</div>;
+    return (
+      <div className="min-h-screen bg-black">
+        <Loading />
+      </div>
+    );
   }
 
   if (error) {

@@ -5,6 +5,7 @@ import { eventService, movieService } from "../../services/apiService";
 import { Movie } from "../../interface/movie";
 import placeholderImage from "../../img/Placeholder.png";
 import { useAuth } from "../../context/AuthContext";
+import Loading from "../Animation/Loading";
 
 const CalendarIcon = () => (
   <svg
@@ -138,7 +139,9 @@ export const NextEvent = () => {
         <h2 className="text-3xl lg:text-5xl text-white font-bold mb-8">
           Next Event
         </h2>
-        <p className="text-2xl lg:text-3xl text-lightGray">Loading...</p>
+        <div className="flex justify-center">
+          <Loading size="small" />
+        </div>
       </div>
     );
   }

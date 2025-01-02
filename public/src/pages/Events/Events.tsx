@@ -10,6 +10,7 @@ import { Link } from "react-router-dom";
 import { formatDate } from "../../utils/dateFormatter";
 import { useAuth } from "../../context/AuthContext";
 import { PageTransition } from "../../components/Animation/PageTransition";
+import Loading from "../../components/Animation/Loading";
 
 export const Events = () => {
   const navigate = useNavigate();
@@ -28,10 +29,14 @@ export const Events = () => {
         setLoading(true);
         const data = await eventService.getEvents();
         setEvents(data as IEvent[]);
+        setFilteredEvents(null);
+        setSelectedDate(null);
       } catch (error) {
         setError("Failed to fetch events");
       } finally {
-        setLoading(false);
+        setTimeout(() => {
+          setLoading(false);
+        }, 300);
       }
     };
 
@@ -295,8 +300,8 @@ export const Events = () => {
               )}
 
               {loading ? (
-                <div className="text-white text-center py-8">
-                  Loading events...
+                <div className="min-h-screen bg-black">
+                  <Loading />
                 </div>
               ) : !userId ? (
                 <div className="bg-darkGray rounded-lg p-8 text-center">
@@ -332,6 +337,7 @@ export const Events = () => {
                   onEventClick={handleEventClick}
                   onDeleteEvent={handleDeleteEvent}
                   currentUserId={userId || undefined}
+                  loading={loading}
                 />
               ) : (
                 <div className="text-lightGray text-center py-8">

@@ -16,6 +16,7 @@ interface EventSummaryProps {
   formData: EventFormData;
   onCreateEvent: () => Promise<void>;
   className?: string;
+  loading?: boolean;
 }
 
 export const EventSummary = ({

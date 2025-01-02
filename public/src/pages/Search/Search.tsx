@@ -7,6 +7,7 @@ import { MovieGrid } from "../../components/MovieGrid/MovieGrid";
 import { FilterPanel } from "../../components/FilterPanel/FilterPanel";
 import { Movie } from "../../interface/movie";
 import { PageTransition } from "../../components/Animation/PageTransition";
+import Loading from "../../components/Animation/Loading";
 
 export const Search = () => {
   const [movies, setMovies] = useState<Movie[]>([]);
@@ -155,7 +156,9 @@ export const Search = () => {
                   : "Popular Movies"}
               </h2>
               {loading ? (
-                <div className="text-white">Loading...</div>
+                <div className="flex justify-center py-8">
+                  <Loading size="small" />
+                </div>
               ) : error ? (
                 <div className="text-red text-center py-8">{error}</div>
               ) : (

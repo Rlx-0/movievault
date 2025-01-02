@@ -28,6 +28,7 @@ export const CreateEvent = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string>
   >({});
@@ -111,6 +112,7 @@ export const CreateEvent = () => {
   };
 
   const handleSubmit = async () => {
+    setLoading(true);
     const validation = validateForm(formData);
     setShowValidation(true);
     setValidationErrors(validation.errors);
@@ -153,6 +155,8 @@ export const CreateEvent = () => {
       setValidationErrors({
         submit: "Failed to create event. Please try again.",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -215,6 +219,7 @@ export const CreateEvent = () => {
                   formData={formData}
                   onCreateEvent={handleSubmit}
                   className="event-summary sticky top-8"
+                  loading={loading}
                 />
               )}
             </div>

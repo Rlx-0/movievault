@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Movie } from "../../interface/movie";
 import { MovieSearch } from "../MovieSearch/MovieSearch";
 import { movieService } from "../../services/apiService";
+import Loading from "../../components/Animation/Loading";
 
 interface EventFormData {
   title: string;
@@ -69,6 +70,14 @@ export const EventDetails = ({
       ),
     });
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black">
+        <Loading />
+      </div>
+    );
+  }
 
   return (
     <div className={`bg-darkGray rounded-lg p-6 ${className || ""}`}>

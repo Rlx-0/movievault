@@ -7,6 +7,7 @@ from users.views import CreateUserView
 from movies.views import MovieViewSet
 from events.views import EventViewSet
 from users.custom_auth import CustomTokenObtainPairView
+from .api.views.contact import contact_form
 
 router = DefaultRouter()
 router.register(r'events', EventViewSet, basename='event')
@@ -25,6 +26,7 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('api/', include('movies.urls')),
     path('api/', include('events.urls')),
+    path('api/contact/', contact_form, name='contact_form'),
 ]
 
 """

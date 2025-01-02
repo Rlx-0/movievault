@@ -1,8 +1,46 @@
+import { useState } from "react";
 import { Header } from "../../components/Header/Header";
 import { Footer } from "../../components/Footer/Footer";
 import { PageTransition } from "../../components/Animation/PageTransition";
+import { contactService } from "../../services/apiService";
+import Loading from "../../components/Animation/Loading";
 
 export const Contact = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+    setError(null);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      await contactService.submitContactForm(formData);
+      setSuccess(true);
+      setFormData({ name: "", email: "", message: "" });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to send message");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <PageTransition>
       <div className="min-h-screen flex flex-col bg-black">
@@ -30,41 +68,81 @@ export const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold mb-2 text-white">Phone</h3>
-                    <p className="text-lightGray">+1 (555) 123-4567</p>
+                    <p className="text-lightGray">+46 70 123 45 67</p>
                   </div>
                   <div>
                     <h3 className="font-semibold mb-2 text-white">Address</h3>
-                    <p className="text-lightGray">123 Movie Street</p>
-                    <p className="text-lightGray">Suite 100</p>
-                    <p className="text-lightGray">New York, NY 10001</p>
+                    <p className="text-lightGray">Kungsgatan 1</p>
+                    <p className="text-lightGray">111 22 Stockholm</p>
                   </div>
                 </div>
               </div>
 
-              <form className="space-y-6 bg-darkGray p-6 rounded-lg">
+              <form
+                onSubmit={handleSubmit}
+                className="space-y-6 bg-darkGray p-6 rounded-lg"
+              >
+                {error && (
+                  <div className="text-red text-sm p-3 bg-red bg-opacity-10 rounded">
+                    {error}
+                  </div>
+                )}
+                {success && (
+                  <div className="text-green-500 text-sm p-3 text-lightGray bg-opacity-10 rounded">
+                    Message sent successfully!
+                  </div>
+                )}
                 <div>
-                  <label className="block mb-2 text-lightGray">Name</label>
+                  <label htmlFor="name" className="block mb-2 text-lightGray">
+                    Name
+                  </label>
                   <input
+                    id="name"
+                    name="name"
                     type="text"
+                    value={formData.name}
+                    onChange={handleChange}
                     className="w-full p-3 bg-black border border-gray-600 rounded text-white focus:border-red focus:outline-none"
+                    required
                   />
                 </div>
                 <div>
-                  <label className="block mb-2 text-lightGray">Email</label>
+                  <label htmlFor="email" className="block mb-2 text-lightGray">
+                    Email
+                  </label>
                   <input
+                    id="email"
+                    name="email"
                     type="email"
+                    value={formData.email}
+                    onChange={handleChange}
                     className="w-full p-3 bg-black border border-gray-600 rounded text-white focus:border-red focus:outline-none"
+                    required
                   />
                 </div>
                 <div>
-                  <label className="block mb-2 text-lightGray">Message</label>
+                  <label
+                    htmlFor="message"
+                    className="block mb-2 text-lightGray"
+                  >
+                    Message
+                  </label>
                   <textarea
+                    id="message"
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
                     className="w-full p-3 bg-black border border-gray-600 rounded text-white focus:border-red focus:outline-none"
                     rows={4}
+                    required
                   ></textarea>
                 </div>
-                <button className="w-full bg-red hover:bg-red-light text-white px-6 py-3 rounded-full transition-colors">
-                  Send Message
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-red hover:bg-red-light text-white px-6 py-3 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? <Loading size="small" /> : "Send Message"}
                 </button>
               </form>
             </div>

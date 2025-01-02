@@ -3,12 +3,14 @@ import { IEvent } from "../../interface/event";
 import { Movie } from "../../interface/movie";
 import { movieService } from "../../services/apiService";
 import { formatDate } from "../../utils/dateFormatter";
+import Loading from "../Animation/Loading";
 
 interface EventListProps {
   events: IEvent[];
   onEventClick: (eventId: number) => void;
   onDeleteEvent?: (eventId: number) => void;
   currentUserId?: number;
+  loading?: boolean;
 }
 
 export const EventList = ({
@@ -16,14 +18,13 @@ export const EventList = ({
   onEventClick,
   onDeleteEvent,
   currentUserId,
+  loading,
 }: EventListProps) => {
   const [movieDetails, setMovieDetails] = useState<Record<number, Movie>>({});
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchMovieDetails = async () => {
       try {
-        setLoading(true);
         const movieIds = [
           ...new Set(events.flatMap((event) => event.movie_options)),
         ];
@@ -36,8 +37,6 @@ export const EventList = ({
         setMovieDetails(Object.fromEntries(details));
       } catch (error) {
         console.error("Failed to fetch movie details:", error);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -52,7 +51,11 @@ export const EventList = ({
   };
 
   if (loading) {
-    return <div className="text-white text-center">Loading events...</div>;
+    return (
+      <div className="flex justify-center items-center py-8">
+        <Loading size="small" />
+      </div>
+    );
   }
 
   return (

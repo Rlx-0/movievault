@@ -7,6 +7,7 @@ import { movieService } from "../../services/apiService";
 import { PageTransition } from "../../components/Animation/PageTransition";
 import placeholderImage from "../../img/Placeholder.png";
 import { genreMap } from "../../config/movieFilters";
+import Loading from "../../components/Animation/Loading";
 
 interface MovieCredits {
   cast: {
@@ -94,8 +95,8 @@ export const MovieDetails = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-white">Loading...</div>
+      <div className="min-h-screen bg-black">
+        <Loading />
       </div>
     );
   }
