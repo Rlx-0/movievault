@@ -185,7 +185,7 @@ export const Events = () => {
             {/* Desktop create event button */}
             <Link
               to="/create-event"
-              className="hidden sm:block bg-red hover:bg-red-light text-white px-6 py-2 rounded-full transition-colors"
+              className="create-event-btn bg-red hover:bg-red-light text-white px-4 py-2 rounded-full"
             >
               Create Event
             </Link>

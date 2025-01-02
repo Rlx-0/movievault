@@ -15,9 +15,14 @@ interface EventFormData {
 interface EventDetailsProps {
   formData: EventFormData;
   onFormChange: (updates: Partial<EventFormData>) => void;
+  className?: string;
 }
 
-export const EventDetails = ({ formData, onFormChange }: EventDetailsProps) => {
+export const EventDetails = ({
+  formData,
+  onFormChange,
+  className,
+}: EventDetailsProps) => {
   const [selectedMovies, setSelectedMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -65,7 +70,7 @@ export const EventDetails = ({ formData, onFormChange }: EventDetailsProps) => {
   };
 
   return (
-    <div className="bg-darkGray rounded-lg p-6">
+    <div className={`bg-darkGray rounded-lg p-6 ${className || ""}`}>
       <h2 className="text-2xl text-white font-bold mb-6">Event Details</h2>
 
       <div className="space-y-6">
@@ -83,7 +88,7 @@ export const EventDetails = ({ formData, onFormChange }: EventDetailsProps) => {
           />
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-4 movie-selection">
           <h3 className="text-white font-bold mb-4">Selected Movies</h3>
           <MovieSearch onMovieSelect={handleMovieSelect} />
           {error && <p className="text-red text-sm">{error}</p>}

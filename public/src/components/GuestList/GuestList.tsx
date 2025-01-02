@@ -3,9 +3,14 @@ import { useState } from "react";
 interface GuestListProps {
   guests: string[];
   onGuestsChange: (guests: string[]) => void;
+  className?: string;
 }
 
-export const GuestList = ({ guests, onGuestsChange }: GuestListProps) => {
+export const GuestList = ({
+  guests,
+  onGuestsChange,
+  className,
+}: GuestListProps) => {
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
 
@@ -39,7 +44,7 @@ export const GuestList = ({ guests, onGuestsChange }: GuestListProps) => {
   };
 
   return (
-    <div className="bg-darkGray rounded-lg p-6">
+    <div className={`bg-darkGray rounded-lg p-6 ${className || ""}`}>
       <h2 className="text-2xl text-white font-bold mb-6">Guest List</h2>
 
       <div className="space-y-6">

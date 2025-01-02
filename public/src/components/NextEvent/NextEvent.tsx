@@ -171,7 +171,7 @@ export const NextEvent = () => {
 
   return (
     <div
-      className="bg-darkGray bg-opacity-90 p-8 lg:p-16 rounded-3xl w-[90%] lg:w-auto lg:min-w-[42rem] max-w-3xl mx-auto lg:mx-0 text-center cursor-pointer hover:bg-opacity-100 transition-all duration-300"
+      className="bg-darkGray bg-opacity-90 p-8 lg:p-16 rounded-3xl w-[90%] lg:w-auto lg:min-w-[42rem] max-w-3xl mx-auto lg:mx-0 text-center cursor-pointer hover:bg-opacity-100 transition-all duration-300 next-event"
       onClick={handleClick}
     >
       <h2 className="text-3xl lg:text-5xl text-white font-bold mb-8">

@@ -64,14 +64,20 @@ export const CreateEvent = () => {
               <EventDetails
                 formData={formData}
                 onFormChange={handleFormChange}
+                className="movie-selection"
               />
               <GuestList
                 guests={formData.guests}
                 onGuestsChange={(guests) => handleFormChange({ guests })}
+                className="guest-list-input"
               />
             </div>
             <div className="w-full md:w-80">
-              <EventSummary formData={formData} onCreateEvent={handleSubmit} />
+              <EventSummary
+                formData={formData}
+                onCreateEvent={handleSubmit}
+                className="event-summary"
+              />
             </div>
           </div>
         </main>

@@ -104,7 +104,7 @@ export const Search = () => {
           </div>
 
           <div className="flex gap-8">
-            <div className="hidden md:block sticky top-8 self-start">
+            <div className="hidden md:block sticky top-8 self-start filter-section">
               <FilterPanel
                 movies={movies}
                 onFilterChange={setFilteredMovies}
@@ -134,7 +134,7 @@ export const Search = () => {
                       }}
                       className="text-lightGray hover:text-white text-xl px-2"
                     >
-                      ×
+                      X
                     </button>
                   </div>
                   <FilterPanel
@@ -159,7 +159,7 @@ export const Search = () => {
               ) : error ? (
                 <div className="text-red text-center py-8">{error}</div>
               ) : (
-                <MovieGrid movies={filteredMovies} />
+                <MovieGrid movies={filteredMovies} className="movie-grid" />
               )}
             </div>
           </div>

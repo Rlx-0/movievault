@@ -1,0 +1,81 @@
+.introjs-tooltip {
+  background-color: #1a1a1a;
+  color: #ffffff;
+  border: 1px solid #333;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  max-width: 400px;
+}
+
+.introjs-tooltip-title {
+  color: #e50914;
+  font-size: 1.2em;
+  font-weight: bold;
+  padding: 16px 20px 0;
+}
+
+.introjs-tooltiptext {
+  padding: 16px 20px;
+  line-height: 1.5;
+  font-size: 1rem;
+}
+
+.introjs-button {
+  background-color: #e50914;
+  border: none;
+  color: white;
+  text-shadow: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.introjs-button:hover {
+  background-color: #f40612;
+  color: white;
+  box-shadow: 0 2px 8px rgba(229, 9, 20, 0.4);
+}
+
+.introjs-helperLayer {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: none;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.7);
+}
+
+.highlight-element {
+  border: 2px solid #e50914 !important;
+  border-radius: 8px;
+  box-shadow: 0 0 0 4px rgba(229, 9, 20, 0.3) !important;
+}
+
+.introjs-progress {
+  background-color: #333;
+  height: 4px;
+  margin-top: 10px;
+}
+
+.introjs-progressbar {
+  background-color: #e50914;
+  transition: width 0.2s ease;
+}
+
+.custom-tooltip {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.welcome-step,
+.final-step {
+  text-align: center;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -15,11 +15,13 @@ interface EventFormData {
 interface EventSummaryProps {
   formData: EventFormData;
   onCreateEvent: () => Promise<void>;
+  className?: string;
 }
 
 export const EventSummary = ({
   formData,
   onCreateEvent,
+  className,
 }: EventSummaryProps) => {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -101,7 +103,9 @@ export const EventSummary = ({
   };
 
   return (
-    <div className="bg-darkGray rounded-lg p-6 sticky top-8">
+    <div
+      className={`bg-darkGray rounded-lg p-6 sticky top-8 ${className || ""}`}
+    >
       <h2 className="text-2xl text-white font-bold mb-6">Summary</h2>
 
       <div className="space-y-6">

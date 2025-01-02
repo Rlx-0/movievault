@@ -142,7 +142,7 @@ export const MovieDetails = () => {
               </div>
 
               {/* Movie Details */}
-              <div className="flex-1">
+              <div className="flex-1 movie-info">
                 <h1 className="text-4xl text-white font-bold mb-4">
                   {movie.title}
                 </h1>

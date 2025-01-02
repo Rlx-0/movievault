@@ -51,7 +51,7 @@ export const Header = () => {
       </Link>
       <Link
         to="/events"
-        className={`text-lg ${
+        className={`text-lg header-events-link ${
           location.pathname === "/events"
             ? "text-white"
             : "text-lightGray hover:text-white"
@@ -84,19 +84,19 @@ export const Header = () => {
         {/* Desktop Search Bar */}
         <form
           onSubmit={handleSearch}
-          className="hidden md:block flex-1 max-w-md mx-8"
+          className="hidden md:block flex-1 max-w-md mx-8 header-search"
         >
           <div className="relative">
             <input
-              type="search"
-              placeholder="Search movies..."
+              type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search for movies..."
               className="w-full px-4 py-2 bg-darkGray text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red"
             />
             <button
               type="submit"
-              className="absolute right-3 top-1/2 transform -translate-y-1/2"
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-lightGray hover:text-white"
             >
               <svg
                 className="w-5 h-5 text-lightGray hover:text-white"
@@ -116,7 +116,7 @@ export const Header = () => {
         </form>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex space-x-8">
+        <nav className="hidden md:flex space-x-8 header-nav">
           <NavLinks />
         </nav>
 

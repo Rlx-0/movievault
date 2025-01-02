@@ -5,9 +5,10 @@ import placeholderImage from "../../img/Placeholder.png";
 
 interface MovieGridProps {
   movies: Movie[];
+  className?: string;
 }
 
-export const MovieGrid = ({ movies }: MovieGridProps) => {
+export const MovieGrid = ({ movies, className }: MovieGridProps) => {
   const getImageUrl = (path: string | null) => {
     if (!path) return placeholderImage;
     return `https://image.tmdb.org/t/p/w500${path}`;
@@ -23,7 +24,11 @@ export const MovieGrid = ({ movies }: MovieGridProps) => {
   };
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+    <div
+      className={`grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 ${
+        className || ""
+      }`}
+    >
       {movies.map((movie) => (
         <Link
           key={movie.id}
