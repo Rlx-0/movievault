@@ -14,6 +14,7 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.db import models
+import requests
 
 from movies.models import Movie
 from movies.serializers import MovieSerializer
@@ -74,7 +75,8 @@ class EventViewSet(viewsets.ModelViewSet):
         except Movie.DoesNotExist:
             movie = Movie.objects.create(
                 tmdb_id=movie_id,
-                title='Temporary Title'
+                title=f'Movie {movie_id}',
+                id=movie_id
             )
 
         vote, created = MovieVote.objects.update_or_create(
@@ -232,7 +234,6 @@ class EventViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        # Map RSVP response to invitation status
         status_mapping = {
             'yes': 'accepted',
             'no': 'declined'
@@ -240,7 +241,6 @@ class EventViewSet(viewsets.ModelViewSet):
         invitation.status = status_mapping.get(response_status, response_status)
         invitation.save()
 
-        # Send confirmation email
         context = {
             'event': {
                 'title': event.title,
@@ -265,7 +265,6 @@ class EventViewSet(viewsets.ModelViewSet):
         email.mixed_subtype = 'related'
         email.send(fail_silently=False)
 
-        # For GET requests, return a HTML response
         if request.method == 'GET':
             context = {
                 'event': {
