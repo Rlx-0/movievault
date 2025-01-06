@@ -15,8 +15,25 @@ import { Register } from "./pages/Register/Register";
 import { Tutorial } from "./components/Tutorial/Tutorial";
 import "./styles/tutorial.css";
 import { TutorialProvider } from "./context/TutorialContext";
+import { useEffect } from "react";
+import { initGA, logPageView } from "./utils/analytics";
 
 function App() {
+  useEffect(() => {
+    initGA();
+    logPageView();
+
+    const handleRouteChange = () => {
+      logPageView();
+    };
+
+    window.addEventListener("popstate", handleRouteChange);
+
+    return () => {
+      window.removeEventListener("popstate", handleRouteChange);
+    };
+  }, []);
+
   return (
     <AnimatePresence mode="wait">
       <AuthProvider>
