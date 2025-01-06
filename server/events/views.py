@@ -249,10 +249,13 @@ class EventViewSet(viewsets.ModelViewSet):
                 'description': event.description,
             },
             'recipient_name': invitation.email.split('@')[0],
-            'host_name': event.host.username,
+            'status': invitation.status,
+            'site_name': 'MovieVault',
+            'contact_email': settings.DEFAULT_FROM_EMAIL,
+            'site_url': settings.SITE_URL,
         }
         
-        html_message = render_to_string('emails/event_invitation.html', context)
+        html_message = render_to_string('emails/event_confirmation.html', context)
         plain_message = f"You have {invitation.status} the invitation to {event.title}"
         
         email = EmailMultiAlternatives(

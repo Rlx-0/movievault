@@ -22,4 +22,7 @@ Confirmed{% endblock %} {% block content %}
   We've added this event to your upcoming events list. You can view the full
   details and vote on movies anytime by visiting the event page.
 </p>
+<div style="text-align: center; margin-top: 20px;">
+  <a href="{{ site_url }}/events/{{ event.id }}" class="button" style="color: #161616">View Event Details</a>
+</div>
 {% endif %} {% endblock %}
